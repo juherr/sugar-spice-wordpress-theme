@@ -71,9 +71,9 @@ js/
 
 ### Current state
 
-The old Options Framework is still loaded for backward compatibility, but its admin page is now hidden and redirected to the Customizer.
+The old Options Framework runtime has been removed. Its admin page slug is redirected to the Customizer.
 
-Legacy values are still read as fallbacks while the new Customizer-based settings take precedence.
+Legacy values are still read directly from the old option stored in the database while the new Customizer-based settings take precedence.
 
 ### Mapping
 
@@ -122,7 +122,6 @@ If not, the theme continues to use the old value as a fallback.
 
 ## What Was Not Removed Yet
 
-- The bundled Options Framework code under `inc/options-framework/` is still present.
 - Legacy option reads are still supported through helper fallbacks.
 
 This is intentional to avoid breaking existing sites during the migration.
@@ -132,4 +131,3 @@ This is intentional to avoid breaking existing sites during the migration.
 1. Test the theme in a real WordPress 6.9 site with existing saved options.
 2. Verify that migrated Customizer values appear correctly for upgraded installs.
 3. Once upgrade behavior is confirmed, remove frontend fallback reads to legacy options.
-4. Remove the bundled Options Framework entirely in a later cleanup release.

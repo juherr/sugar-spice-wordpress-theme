@@ -51,15 +51,39 @@ function sugarspice_get_theme_version() {
 }
 
 /**
- * Return a normalized theme option value.
+ * Return the legacy option storage key.
+ *
+ * @return string
+ */
+function sugarspice_get_legacy_options_key() {
+	$stylesheet = (string) get_option( 'stylesheet' );
+
+	return preg_replace( '/\W/', '_', strtolower( $stylesheet ) );
+}
+
+/**
+ * Return all legacy Options Framework values.
+ *
+ * @return array<string,mixed>
+ */
+function sugarspice_get_legacy_options() {
+	$options = get_option( sugarspice_get_legacy_options_key(), array() );
+
+	return is_array( $options ) ? $options : array();
+}
+
+/**
+ * Return a normalized legacy theme option value.
  *
  * @param string $name Option key.
  * @param mixed  $default Default value.
  * @return mixed
  */
 function sugarspice_get_theme_option( $name, $default = false ) {
-	if ( function_exists( 'of_get_option' ) ) {
-		return of_get_option( $name, $default );
+	$legacy_options = sugarspice_get_legacy_options();
+
+	if ( array_key_exists( $name, $legacy_options ) ) {
+		return $legacy_options[ $name ];
 	}
 
 	return $default;
