@@ -92,7 +92,7 @@ function sugarspice_css() {
 
 	wp_enqueue_style( 'sugarspice-style', get_stylesheet_uri(), array(), $theme_version );
 
-	if ( 0 == sugarspice_get_theme_option( 'responsive' ) ) {
+	if ( ! sugarspice_get_setting( 'disable_responsive', false ) ) {
 		wp_enqueue_style( 'sugarspice-responsive', get_template_directory_uri() . '/responsive.css', array( 'sugarspice-style' ), $theme_version );
 	}
 

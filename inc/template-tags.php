@@ -277,21 +277,9 @@ function sugarspice_posted_on() {
 
     $meta_data = array();
 
-    $post_meta = of_get_option( 'meta_data' );
-
-    if ( empty ($post_meta) )
-      return ' ';
-
-    if ( is_array( $post_meta ) ) {
-        $display_author = $post_meta['author'];
-        $display_date = $post_meta['date'];
-        $display_comments = $post_meta['comments'];
-    }
-    else {
-        $display_author = 1;
-        $display_date = 1;
-        $display_comments = 1;
-    }
+    $display_author = sugarspice_show_post_meta( 'author' );
+    $display_date = sugarspice_show_post_meta( 'date' );
+    $display_comments = sugarspice_show_post_meta( 'comments' );
 
     
     if ( $display_author )
@@ -302,6 +290,10 @@ function sugarspice_posted_on() {
 
     if ( $display_comments )
         $meta_data[] = $comments_string;
+
+	if ( empty( $meta_data ) ) {
+		return ' ';
+	}
     
     
 	echo implode( ' // ', $meta_data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

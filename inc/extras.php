@@ -61,7 +61,7 @@ function sugarspice_aftercontent( $signature = '') {
         return $signature;
     }
 
-    $signature_image = sugarspice_get_theme_option( 'signature_image' );
+    $signature_image = sugarspice_get_signature_image_url();
 
     if ( $signature_image ) {
         $signature .= '<div class="post_signature"><img src="' . esc_url( $signature_image ) . '" alt="" loading="lazy" /></div>';
@@ -88,8 +88,8 @@ function sugarspice_color_scheme() {
         'yellow'   => '#fff568',
     );
 
-    $main_color_key = sanitize_key( (string) sugarspice_get_theme_option( 'main_color', 'emerald' ) );
-    $accent_color_key = sanitize_key( (string) sugarspice_get_theme_option( 'accent_color', 'peach' ) );
+    $main_color_key = sanitize_key( (string) sugarspice_get_setting( 'main_color', 'emerald' ) );
+    $accent_color_key = sanitize_key( (string) sugarspice_get_setting( 'accent_color', 'peach' ) );
     $main_color = isset( $colors[ $main_color_key ] ) ? $colors[ $main_color_key ] : $colors['emerald'];
     $accent_color = isset( $colors[ $accent_color_key ] ) ? $colors[ $accent_color_key ] : $colors['peach'];
     $basic_color = '#797979';
@@ -107,7 +107,7 @@ function sugarspice_color_scheme() {
     $output .= 'blockquote { border-left-color: ' . $accent_color . '; }' . "\n";
     $output .= '.button:hover, button:hover, a.social-icon:hover , input[type="submit"]:hover, input[type="reset"]:hover, input[type="button"]:hover { background: rgba(' . (int) $rgb['r'] . ', ' . (int) $rgb['g'] . ', ' . (int) $rgb['b'] . ', 0.7); } ';
 
-    if ( 1 == sugarspice_get_theme_option( 'responsive' ) ) {
+    if ( sugarspice_get_setting( 'disable_responsive', false ) ) {
         $output .= '.tinynav { display: none; }';
     }
 

@@ -13,8 +13,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="profile" href="http://gmpg.org/xfn/11">
     <link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>">
-    <?php $favicon = sugarspice_get_theme_option( 'favicon' ); ?>
-    <?php if ( $favicon ) : ?>
+    <?php $favicon = sugarspice_get_legacy_favicon_url(); ?>
+    <?php if ( $favicon && ( ! function_exists( 'has_site_icon' ) || ! has_site_icon() ) ) : ?>
     <link rel="shortcut icon" href="<?php echo esc_url( $favicon ); ?>">
     <?php endif; ?>
 <?php wp_head(); ?>
@@ -31,8 +31,8 @@
 
 			<?php the_custom_logo(); ?>
 
-		<?php elseif ( sugarspice_get_theme_option( 'logo_image' ) ) : ?>
-        <?php $logo_image = sugarspice_get_theme_option( 'logo_image' ); ?>
+		<?php elseif ( sugarspice_get_legacy_logo_url() ) : ?>
+		<?php $logo_image = sugarspice_get_legacy_logo_url(); ?>
         
 			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="logo-img"><img src="<?php echo esc_url( $logo_image ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" /></a>
             
