@@ -28,7 +28,7 @@ get_header(); ?>
 							 * what author we're dealing with (if that is the case).
 							*/
 							the_post();
-							printf( __( 'Author: %s', 'sugarspice' ), '<span class="vcard">' . esc_html( get_the_author() ) . '</span>' );
+							printf( esc_html__( 'Author: %s', 'sugarspice' ), '<span class="vcard">' . esc_html( get_the_author() ) . '</span>' );
 							/* Since we called the_post() above, we need to
 							 * rewind the loop back to the beginning that way
 							 * we can run the loop properly, in full.
@@ -36,31 +36,31 @@ get_header(); ?>
 							rewind_posts();
 
 						elseif ( is_day() ) :
-							printf( __( 'Day: %s', 'sugarspice' ), '<span>' . esc_html( get_the_date() ) . '</span>' );
+							printf( esc_html__( 'Day: %s', 'sugarspice' ), '<span>' . esc_html( get_the_date() ) . '</span>' );
 
 						elseif ( is_month() ) :
-							printf( __( 'Month: %s', 'sugarspice' ), '<span>' . esc_html( get_the_date( 'F Y' ) ) . '</span>' );
+							printf( esc_html__( 'Month: %s', 'sugarspice' ), '<span>' . esc_html( get_the_date( 'F Y' ) ) . '</span>' );
 
 						elseif ( is_year() ) :
-							printf( __( 'Year: %s', 'sugarspice' ), '<span>' . esc_html( get_the_date( 'Y' ) ) . '</span>' );
+							printf( esc_html__( 'Year: %s', 'sugarspice' ), '<span>' . esc_html( get_the_date( 'Y' ) ) . '</span>' );
 
 						elseif ( is_tax( 'post_format', 'post-format-aside' ) ) :
-							_e( 'Asides', 'sugarspice' );
+							esc_html_e( 'Asides', 'sugarspice' );
 
 						elseif ( is_tax( 'post_format', 'post-format-image' ) ) :
-							_e( 'Images', 'sugarspice');
+							esc_html_e( 'Images', 'sugarspice');
 
 						elseif ( is_tax( 'post_format', 'post-format-video' ) ) :
-							_e( 'Videos', 'sugarspice' );
+							esc_html_e( 'Videos', 'sugarspice' );
 
 						elseif ( is_tax( 'post_format', 'post-format-quote' ) ) :
-							_e( 'Quotes', 'sugarspice' );
+							esc_html_e( 'Quotes', 'sugarspice' );
 
 						elseif ( is_tax( 'post_format', 'post-format-link' ) ) :
-							_e( 'Links', 'sugarspice' );
+							esc_html_e( 'Links', 'sugarspice' );
 
 						else :
-							_e( 'Archives', 'sugarspice' );
+							esc_html_e( 'Archives', 'sugarspice' );
 
 						endif;
 					?>

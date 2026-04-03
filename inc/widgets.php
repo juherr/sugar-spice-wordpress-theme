@@ -12,13 +12,15 @@ require_once get_template_directory() . '/inc/widgets/social-widget.php';
 
 /**
  * Register widget areas and custom widgets.
+ *
+ * @return void
  */
 function sugarspice_widgets_init() {
 	register_sidebar(
 		array(
 			'name'          => __( 'Sidebar', 'sugarspice' ),
 			'id'            => 'sidebar-1',
-			'description'   => 'Main widget area',
+			'description'   => __( 'Main widget area.', 'sugarspice' ),
 			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
 			'after_widget'  => '</aside>',
 			'before_title'  => '<h3 class="widget-title"><span>',
@@ -30,7 +32,7 @@ function sugarspice_widgets_init() {
 		array(
 			'name'          => __( 'Prefooter Area One', 'sugarspice' ),
 			'id'            => 'prefooter-1',
-			'description'   => 'Widget area above the footer.',
+			'description'   => __( 'First widget area above the footer.', 'sugarspice' ),
 			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
 			'after_widget'  => '</aside>',
 			'before_title'  => '<h3 class="widget-title"><span>',
@@ -42,7 +44,7 @@ function sugarspice_widgets_init() {
 		array(
 			'name'          => __( 'Prefooter Area Two', 'sugarspice' ),
 			'id'            => 'prefooter-2',
-			'description'   => 'Widget area above the footer.',
+			'description'   => __( 'Second widget area above the footer.', 'sugarspice' ),
 			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
 			'after_widget'  => '</aside>',
 			'before_title'  => '<h3 class="widget-title"><span>',
@@ -54,7 +56,7 @@ function sugarspice_widgets_init() {
 		array(
 			'name'          => __( 'Prefooter Area Three', 'sugarspice' ),
 			'id'            => 'prefooter-3',
-			'description'   => 'Widget area above the footer.',
+			'description'   => __( 'Third widget area above the footer.', 'sugarspice' ),
 			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
 			'after_widget'  => '</aside>',
 			'before_title'  => '<h3 class="widget-title"><span>',

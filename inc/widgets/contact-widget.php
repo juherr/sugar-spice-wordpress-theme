@@ -1,52 +1,47 @@
 <?php
 /**
  * Contact widget.
+ *
+ * @package sugarspice
  */
 
 class sugarspice_contact_widget extends WP_Widget {
 
+	/**
+	 * Set up the widget.
+	 */
 	public function __construct() {
-    	parent::__construct(
-        	'sugarspice_contact_widget',
-        	__('Sugar & Spice: Contact widget', 'sugarspice'),
-        	array(
-            	'classname' => 'sugarspice_contact_widget',
-            	'description' => __('Displays contact info with icons', 'sugarspice')
-        	)
-    	);
+		parent::__construct(
+			'sugarspice_contact_widget',
+			__( 'Sugar & Spice: Contact widget', 'sugarspice' ),
+			array(
+				'classname'   => 'sugarspice_contact_widget',
+				'description' => __( 'Displays contact info with icons', 'sugarspice' ),
+			)
+		);
 	}
 
 	/**
-	 * Widget setup.
-	 */
-	//function sugarspice_contact_widget() {
-		/* Widget settings. */
-	//	$widget_ops = array( 'classname' => 'sugarspice_contact_widget', 'description' => __('Displays conatct info with icons', 'sugarspice') );
-
-		/* Widget control settings. */
-	//	$control_ops = array( 'width' => 250, 'height' => 350, 'id_base' => 'sugarspice_contact_widget' );
-
-		/* Create the widget. */
-	//	$this->WP_Widget( 'sugarspice_contact_widget', __('Sugar & Spice: Contact widget', 'sugarspice'), $widget_ops, $control_ops );
-	//}
-
-	/**
 	 * How to display the widget on the screen.
+	 *
+	 * @param array $args     Display arguments.
+	 * @param array $instance Saved values.
+	 * @return void
 	 */
 	public function widget( $args, $instance ) {
-		$title        = isset( $instance['title'] ) ? $instance['title'] : '';
-		$address      = isset( $instance['address'] ) ? $instance['address'] : '';
-		$phone        = isset( $instance['phone'] ) ? $instance['phone'] : '';
-		$email        = isset( $instance['email'] ) ? $instance['email'] : '';
+		$title         = apply_filters( 'widget_title', $instance['title'] ?? '', $instance, $this->id_base );
+		$address       = $instance['address'] ?? '';
+		$phone         = $instance['phone'] ?? '';
+		$email         = $instance['email'] ?? '';
 		$before_widget = isset( $args['before_widget'] ) ? $args['before_widget'] : '';
 		$after_widget  = isset( $args['after_widget'] ) ? $args['after_widget'] : '';
 		$before_title  = isset( $args['before_title'] ) ? $args['before_title'] : '';
 		$after_title   = isset( $args['after_title'] ) ? $args['after_title'] : '';
 
-		echo $before_widget;
+		echo $before_widget; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		if ( $title ) {
-			echo $before_title . esc_html( $title ) . $after_title;
+			echo $before_title . esc_html( $title ) . $after_title; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 		?>
 		<ul>
@@ -71,28 +66,41 @@ class sugarspice_contact_widget extends WP_Widget {
 			<?php endif; ?>
 		</ul>
 		<?php
-		echo $after_widget;
+		echo $after_widget; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
 	 * Update the widget settings.
+	 *
+	 * @param array $new_instance New values.
+	 * @param array $old_instance Old values.
+	 * @return array
 	 */
 	public function update( $new_instance, $old_instance ) {
-		$instance = $old_instance;
-		$instance['title'] = sanitize_text_field( $new_instance['title'] );
-		$instance['address'] = sanitize_text_field( $new_instance['address'] );
-		$instance['phone'] = sanitize_text_field( $new_instance['phone'] );
-		$instance['email'] = sanitize_email( $new_instance['email'] );
+		$instance = array();
+		$instance['title']   = sanitize_text_field( $new_instance['title'] ?? '' );
+		$instance['address'] = sanitize_text_field( $new_instance['address'] ?? '' );
+		$instance['phone']   = sanitize_text_field( $new_instance['phone'] ?? '' );
+		$instance['email']   = sanitize_email( $new_instance['email'] ?? '' );
 
 		return $instance;
 	}
 
-
+	/**
+	 * Display the widget form in the admin area.
+	 *
+	 * @param array $instance Current values.
+	 * @return void
+	 */
 	public function form( $instance ) {
-
-		/* Set up some default widget settings. */
-		$defaults = array( 'title' => __( 'Contact', 'sugarspice' ), 'address' => '', 'phone' => '', 'email' => '' );
-		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
+		$defaults = array(
+			'title'   => __( 'Contact', 'sugarspice' ),
+			'address' => '',
+			'phone'   => '',
+			'email'   => '',
+		);
+		$instance = wp_parse_args( (array) $instance, $defaults );
+		?>
 		
 		<!-- Widget Title -->
 		<p>

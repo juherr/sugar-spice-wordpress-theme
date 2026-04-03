@@ -1,46 +1,33 @@
 <?php
 /**
  * Social widget.
+ *
+ * @package sugarspice
  */
 
 class sugarspice_social_widget extends WP_Widget {
 
+	/**
+	 * Set up the widget.
+	 */
 	public function __construct() {
- 	   parent::__construct(
-    	    'sugarspice_social_widget',
-        	__('Sugar & Spice: Social media icons', 'sugarspice'),
-        	array(
-            	'classname' => 'sugarspice_social_widget',
-            	'description' => __('Displays icons to social media profiles.', 'sugarspice')
-        	)
-    	);
+		parent::__construct(
+			'sugarspice_social_widget',
+			__( 'Sugar & Spice: Social media icons', 'sugarspice' ),
+			array(
+				'classname'   => 'sugarspice_social_widget',
+				'description' => __( 'Displays icons to social media profiles.', 'sugarspice' ),
+			)
+		);
 	}
 
 	/**
-	 * Widget setup.
+	 * Supported social profiles.
+	 *
+	 * @return array
 	 */
-	//function sugarspice_social_widget() {
-		/* Widget settings. */
-	//	$widget_ops = array( 'classname' => 'sugarspice_social_widget', 'description' => __('Displays icons to social media profiles.', 'sugarspice') );
-
-		/* Widget control settings. */
-	//	$control_ops = array( 'width' => 250, 'height' => 350, 'id_base' => 'sugarspice_social_widget' );
-
-		/* Create the widget. */
-	//	$this->WP_Widget( 'sugarspice_social_widget', __('Sugar & Spice: Social media icons', 'sugarspice'), $widget_ops, $control_ops );
-	//}
-
-	/**
-	 * How to display the widget on the screen.
-	 */
-	public function widget( $args, $instance ) {
-		$title         = apply_filters( 'widget_title', isset( $instance['title'] ) ? $instance['title'] : '' );
-		$before_widget = isset( $args['before_widget'] ) ? $args['before_widget'] : '';
-		$after_widget  = isset( $args['after_widget'] ) ? $args['after_widget'] : '';
-		$before_title  = isset( $args['before_title'] ) ? $args['before_title'] : '';
-		$after_title   = isset( $args['after_title'] ) ? $args['after_title'] : '';
-
-		$profiles = array(
+	protected function get_profiles() {
+		return array(
 			'facebook'   => array( 'label' => __( 'Follow me on Facebook', 'sugarspice' ), 'icon' => 'icon-facebook' ),
 			'twitter'    => array( 'label' => __( 'Follow me on Twitter', 'sugarspice' ), 'icon' => 'icon-twitter' ),
 			'googleplus' => array( 'label' => __( 'Follow me on Google+', 'sugarspice' ), 'icon' => 'icon-google-plus' ),
@@ -50,19 +37,35 @@ class sugarspice_social_widget extends WP_Widget {
 			'flickr'     => array( 'label' => __( 'Follow me on Flickr', 'sugarspice' ), 'icon' => 'icon-flickr' ),
 			'rss'        => array( 'label' => __( 'Subscribe to my RSS feed', 'sugarspice' ), 'icon' => 'icon-rss' ),
 		);
+	}
 
-		echo $before_widget;
+	/**
+	 * How to display the widget on the screen.
+	 *
+	 * @param array $args     Display arguments.
+	 * @param array $instance Saved values.
+	 * @return void
+	 */
+	public function widget( $args, $instance ) {
+		$title         = apply_filters( 'widget_title', $instance['title'] ?? '', $instance, $this->id_base );
+		$before_widget = isset( $args['before_widget'] ) ? $args['before_widget'] : '';
+		$after_widget  = isset( $args['after_widget'] ) ? $args['after_widget'] : '';
+		$before_title  = isset( $args['before_title'] ) ? $args['before_title'] : '';
+		$after_title   = isset( $args['after_title'] ) ? $args['after_title'] : '';
+		$profiles = $this->get_profiles();
+
+		echo $before_widget; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		if ( $title ) {
-			echo $before_title . esc_html( $title ) . $after_title;
+			echo $before_title . esc_html( $title ) . $after_title; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 		?>
 		<ul class="social">
 			<?php foreach ( $profiles as $key => $profile ) : ?>
-				<?php $url = isset( $instance[ $key ] ) ? $instance[ $key ] : ''; ?>
+				<?php $url = $instance[ $key ] ?? ''; ?>
 				<?php if ( $url ) : ?>
 				<li>
-					<a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener noreferrer" class="social-icon" title="<?php echo esc_attr( $profile['label'] ); ?>">
+					<a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="<?php echo esc_attr( $profile['label'] ); ?>" title="<?php echo esc_attr( $profile['label'] ); ?>">
 						<div class="icon <?php echo esc_attr( $profile['icon'] ); ?>" aria-hidden="true"></div>
 					</a>
 				</li>
@@ -71,34 +74,49 @@ class sugarspice_social_widget extends WP_Widget {
 		</ul>
 		<?php
 
-		echo $after_widget;
+		echo $after_widget; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
 	 * Update the widget settings.
+	 *
+	 * @param array $new_instance New values.
+	 * @param array $old_instance Old values.
+	 * @return array
 	 */
 	public function update( $new_instance, $old_instance ) {
-		$instance = $old_instance;
+		$instance = array();
+		$profiles = $this->get_profiles();
 
-		$instance['title'] = sanitize_text_field( $new_instance['title'] );
-		$instance['rss'] = esc_url_raw( $new_instance['rss'] );
-		$instance['facebook'] = esc_url_raw( $new_instance['facebook'] );
-		$instance['googleplus'] = esc_url_raw( $new_instance['googleplus'] );
-		$instance['twitter'] = esc_url_raw( $new_instance['twitter'] );
-		$instance['pinterest'] = esc_url_raw( $new_instance['pinterest'] );
-		$instance['instagram'] = esc_url_raw( $new_instance['instagram'] );
-		$instance['youtube'] = esc_url_raw( $new_instance['youtube'] );
-		$instance['flickr'] = esc_url_raw( $new_instance['flickr'] );
+		$instance['title'] = sanitize_text_field( $new_instance['title'] ?? '' );
+
+		foreach ( array_keys( $profiles ) as $profile_key ) {
+			$instance[ $profile_key ] = esc_url_raw( $new_instance[ $profile_key ] ?? '' );
+		}
 
 		return $instance;
 	}
 
-
+	/**
+	 * Display the widget form in the admin area.
+	 *
+	 * @param array $instance Current values.
+	 * @return void
+	 */
 	public function form( $instance ) {
-
-		/* Set up some default widget settings. */
-		$defaults = array( 'title' => __( 'Follow me', 'sugarspice' ), 'rss' => '', 'facebook' => '', 'twitter' => '', 'googleplus' => '', 'pinterest' => '', 'instagram' => '', 'youtube' => '', 'flickr' => '' );
-		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
+		$defaults = array(
+			'title'      => __( 'Follow me', 'sugarspice' ),
+			'rss'        => '',
+			'facebook'   => '',
+			'twitter'    => '',
+			'googleplus' => '',
+			'pinterest'  => '',
+			'instagram'  => '',
+			'youtube'    => '',
+			'flickr'     => '',
+		);
+		$instance = wp_parse_args( (array) $instance, $defaults );
+		?>
 
 		<!-- Widget Title: Text Input -->
 		<p>

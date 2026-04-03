@@ -5,10 +5,10 @@
  * @package sugarspice
  */
 
-declare(strict_types=1);
-
 /**
  * Echo the prefooter layout class based on active sidebars.
+ *
+ * @return void
  */
 function sugarspice_prefooter_class() {
 	$count = 0;
@@ -58,7 +58,7 @@ function sugarspice_get_theme_version() {
 function sugarspice_get_legacy_options_key() {
 	$stylesheet = (string) get_option( 'stylesheet' );
 
-	return preg_replace( '/\W/', '_', strtolower( $stylesheet ) );
+	return (string) preg_replace( '/\W/', '_', strtolower( $stylesheet ) );
 }
 
 /**
@@ -104,7 +104,7 @@ function sugarspice_get_setting( $name, $default = false ) {
 	}
 
 	if ( 'disable_responsive' === $name ) {
-		return 1 == sugarspice_get_theme_option( 'responsive', 0 );
+		return '1' === (string) sugarspice_get_theme_option( 'responsive', 0 );
 	}
 
 	if ( 0 === strpos( $name, 'display_post_meta_' ) ) {
@@ -207,7 +207,15 @@ function sugarspice_get_layout_option( $name, $default = 'full' ) {
  * @return string
  */
 function sugarspice_css_output( $selectors, $color = '', $background = '' ) {
-	$output = $selectors . ' {';
+	$output = '';
+	$color = $color ? sanitize_hex_color( $color ) : '';
+	$background = $background ? sanitize_hex_color( $background ) : '';
+
+	if ( ! $color && ! $background ) {
+		return $output;
+	}
+
+	$output .= $selectors . ' {';
 
 	if ( $color ) {
 		$output .= ' color:' . $color . '; ';

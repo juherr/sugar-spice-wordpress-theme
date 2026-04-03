@@ -21,7 +21,7 @@ get_header(); ?>
 							$metadata = wp_get_attachment_metadata();
 							$width = isset( $metadata['width'] ) ? (int) $metadata['width'] : 0;
 							$height = isset( $metadata['height'] ) ? (int) $metadata['height'] : 0;
-							printf( __( 'Published <span class="entry-date"><time class="entry-date" datetime="%1$s">%2$s</time></span> at <a href="%3$s">%4$s &times; %5$s</a> in <a href="%6$s" rel="gallery">%7$s</a>', 'sugarspice' ),
+							echo wp_kses_post( sprintf( __( 'Published <span class="entry-date"><time class="entry-date" datetime="%1$s">%2$s</time></span> at <a href="%3$s">%4$s &times; %5$s</a> in <a href="%6$s" rel="gallery">%7$s</a>', 'sugarspice' ),
 								esc_attr( get_the_date( 'c' ) ),
 								esc_html( get_the_date() ),
 								esc_url( wp_get_attachment_url() ),
@@ -29,7 +29,7 @@ get_header(); ?>
 								$height,
 								esc_url( get_permalink( $post->post_parent ) ),
 								esc_html( get_the_title( $post->post_parent ) )
-							);
+							) );
 
 							edit_post_link( __( 'Edit', 'sugarspice' ), '<span class="edit-link">', '</span>' );
 						?>
@@ -68,8 +68,9 @@ get_header(); ?>
 
 			<?php
 				// If comments are open or we have at least one comment, load up the comment template
-				if ( comments_open() || 0 !== get_comments_number() )
+				if ( comments_open() || 0 !== get_comments_number() ) {
 					comments_template();
+				}
 			?>
 
 		<?php endwhile; // end of the loop. ?>

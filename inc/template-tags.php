@@ -59,16 +59,19 @@ endif; // sugarspice_content_nav
  * Content pagination
  */
 function sugarspice_link_pages( $content ) {
-    if ( is_single() ) {
-        $content .= wp_link_pages( array(
-                        'before' => '<div class="page-links">' . __( 'Pages:', 'sugarspice' ),
-                        'after'  => '</div>',
-                        'echo'   => 0
-                    ) );
-    }
-    return $content;
+	if ( is_single() ) {
+		$content .= wp_link_pages(
+			array(
+				'before' => '<div class="page-links">' . __( 'Pages:', 'sugarspice' ),
+				'after'  => '</div>',
+				'echo'   => 0,
+			)
+		);
+	}
+
+	return $content;
 }
-add_filter('the_content','sugarspice_link_pages', 10);
+add_filter( 'the_content', 'sugarspice_link_pages', 10 );
 
 
 if ( ! function_exists( 'sugarspice_comment' ) ) :
@@ -92,30 +95,27 @@ function sugarspice_comment( $comment, $args, $depth ) {
 	<li id="comment-<?php comment_ID(); ?>" <?php comment_class( empty( $args['has_children'] ) ? '' : 'parent' ); ?>>
 		<article id="div-comment-<?php comment_ID(); ?>" class="comment-body">
 				<div class="comment-author vcard">
-					<?php if ( 0 !== (int) $args['avatar_size'] ) { echo get_avatar( $comment, $args['avatar_size'] ); } ?>
+					<?php if ( 0 !== (int) $args['avatar_size'] ) { echo get_avatar( $comment, (int) $args['avatar_size'] ); } ?>
 				</div><!-- .comment-author -->
                 <div class="comment-box">
-					<?php printf( __( '%s <span class="says">says:</span>', 'sugarspice' ), sprintf( '<cite class="fn">%s</cite>', get_comment_author_link() ) ); ?>
+					<?php echo wp_kses_post( sprintf( __( '%s <span class="says">says:</span>', 'sugarspice' ), sprintf( '<cite class="fn">%s</cite>', get_comment_author_link() ) ) ); ?>
                     <span class="comment-meta">
                         <small>
                         <a href="<?php echo esc_url( get_comment_link( $comment->comment_ID ) ); ?>">
-                            <time datetime="<?php comment_time( 'c' ); ?>">
-                                <?php printf( _x( '%1$s at %2$s', '1: date, 2: time', 'sugarspice' ), get_comment_date(), get_comment_time() ); ?>
-                            </time>
+	                            <time datetime="<?php echo esc_attr( get_comment_time( 'c' ) ); ?>">
+	                                <?php printf( _x( '%1$s at %2$s', '1: date, 2: time', 'sugarspice' ), get_comment_date(), get_comment_time() ); ?>
+	                            </time>
                         </a>
                         <?php edit_comment_link( __( 'Edit', 'sugarspice' ), '<span class="edit-link">', '</span>' ); ?>
                         </small>
 					<?php if ( '0' === $comment->comment_approved ) : ?>
-					<p class="comment-awaiting-moderation"><?php _e( 'Your comment is awaiting moderation.', 'sugarspice' ); ?></p>
+					<p class="comment-awaiting-moderation"><?php esc_html_e( 'Your comment is awaiting moderation.', 'sugarspice' ); ?></p>
 					<?php endif; ?>
                     </span><!-- .comment-meta -->
 
-                    <div class="comment-content">
-                        <?php comment_text(); ?>
-                    </div><!-- .comment-content -->                        
-                        
-                        
-                    </span><!-- .comment-metadata -->
+	                    <div class="comment-content">
+	                        <?php comment_text(); ?>
+	                    </div><!-- .comment-content -->                        
 
 
 
@@ -227,77 +227,75 @@ function sugarspice_caption_shortcode_filter($val, $attr, $content = null) {
 		. do_shortcode( $content ) . '<p class="wp-caption-text">' . wp_kses_post( $caption ) . '</p></div>';
 }
 
-add_filter('img_caption_shortcode', 'sugarspice_caption_shortcode_filter',10,3);
+add_filter( 'img_caption_shortcode', 'sugarspice_caption_shortcode_filter', 10, 3 );
 
 if ( ! function_exists( 'sugarspice_posted_on' ) ) :
 /**
  * Prints HTML with meta information for the current post-date/time and author.
  */
 function sugarspice_posted_on() {
+	$time_string = '<span class="posted-on"><a href="%1$s" title="%2$s" rel="bookmark"><time class="entry-date published updated" datetime="%3$s">%4$s</time></a></span>';
 
-  $time_string = '<span class="posted-on"><a href="%1$s" title="%2$s" rel="bookmark"><time class="entry-date published updated" datetime="%3$s">%4$s</time></a></span>';
-
-	$time_string = sprintf( $time_string,
-        esc_url( get_permalink() ),
-        esc_attr( get_the_time() ),
+	$time_string = sprintf(
+		$time_string,
+		esc_url( get_permalink() ),
+		esc_attr( get_the_time() ),
 		esc_attr( get_the_date( 'c' ) ),
 		esc_html( get_the_date() )
-	);    
+	);
 
-    $num_comments = get_comments_number();
+	$num_comments = get_comments_number();
 
-    if ( comments_open() ) {
-        if ( $num_comments == 0 ) {
-            $comments = __('No Comments','sugarspice');
-        } elseif ( $num_comments > 1 ) {
-            $comments = $num_comments . __(' Comments','sugarspice');
-        } else {
-            $comments = __('1 Comment','sugarspice');
-        }
-    } else {
-        $comments =  __('Comments off','sugarspice');
-    }
+	if ( comments_open() ) {
+		$comments = sprintf(
+			/* translators: %s: comment count */
+			esc_html( _n( '%s Comment', '%s Comments', $num_comments, 'sugarspice' ) ),
+			number_format_i18n( $num_comments )
+		);
+	} else {
+		$comments = __( 'Comments off', 'sugarspice' );
+	}
 
 	$comments_string = '<span class="comments"><a href="%1$s"><i class="icon-comment"></i> %2$s</a></span>';
 
 	$comments_string = sprintf( $comments_string,
 		esc_url( get_comments_link() ),
 		esc_html( $comments )
-	);    
+	);
 
-    $author_string = '<span class="byline"> %1$s <span class="author vcard"><a href="%2$s" title="%3$s" rel="author" class="fn">%4$s</a></span></span>';
-    
+	$author_string = '<span class="byline"> %1$s <span class="author vcard"><a href="%2$s" title="%3$s" rel="author" class="fn">%4$s</a></span></span>';
+
 	$author_string = sprintf( $author_string,
-        /* translators: this text appears next to author name */
+		/* translators: this text appears next to author name */
 		esc_html__( 'by', 'sugarspice' ),
 		esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ),
-		esc_attr( sprintf( __( 'View all posts by %s', 'sugarspice' ), get_the_author() ) ),
+		esc_attr( sprintf( esc_html__( 'View all posts by %s', 'sugarspice' ), get_the_author() ) ),
 		esc_html( get_the_author() )
-    );
+	);
 
-    $meta_data = array();
+	$meta_data = array();
 
-    $display_author = sugarspice_show_post_meta( 'author' );
-    $display_date = sugarspice_show_post_meta( 'date' );
-    $display_comments = sugarspice_show_post_meta( 'comments' );
+	$display_author   = sugarspice_show_post_meta( 'author' );
+	$display_date     = sugarspice_show_post_meta( 'date' );
+	$display_comments = sugarspice_show_post_meta( 'comments' );
 
-    
-    if ( $display_author )
-        $meta_data[] = $author_string;
+	if ( $display_author ) {
+		$meta_data[] = $author_string;
+	}
 
-    if ( $display_date )
-        $meta_data[] = $time_string;
+	if ( $display_date ) {
+		$meta_data[] = $time_string;
+	}
 
-    if ( $display_comments )
-        $meta_data[] = $comments_string;
+	if ( $display_comments ) {
+		$meta_data[] = $comments_string;
+	}
 
 	if ( empty( $meta_data ) ) {
-		return ' ';
+		return;
 	}
-    
-    
+
 	echo implode( ' // ', $meta_data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-    
 }
 endif;
 
@@ -306,34 +304,28 @@ if ( ! function_exists( 'sugarspice_post_meta' ) ) :
  * Prints HTML with meta information for the current post-date/time and author.
  */
 function sugarspice_post_meta() {
+	/* translators: used between list items, there is a space after the comma */
+	$category_list = get_the_category_list( __( ', ', 'sugarspice' ) );
 
-    /* translators: used between list items, there is a space after the comma */
-    $category_list = get_the_category_list( __( ', ', 'sugarspice' ) );
+	/* translators: used between list items, there is a space after the comma */
+	$tag_list = get_the_tag_list( '', __( ', ', 'sugarspice' ) );
+	$meta_text = '';
 
-    /* translators: used between list items, there is a space after the comma */
-    $tag_list = get_the_tag_list( '', __( ', ', 'sugarspice' ) );
+	if ( ! sugarspice_categorized_blog() ) {
+		if ( '' !== $tag_list ) {
+			$meta_text = __( 'This entry was tagged %2$s.', 'sugarspice' );
+		}
+	} elseif ( '' !== $tag_list ) {
+		$meta_text = __( 'This entry was posted in %1$s and tagged %2$s.', 'sugarspice' );
+	} else {
+		$meta_text = __( 'This entry was posted in %1$s.', 'sugarspice' );
+	}
 
-    if ( ! sugarspice_categorized_blog() ) {
-        // This blog only has 1 category so we just need to worry about tags in the meta text
-        if ( '' != $tag_list ) {
-            $meta_text = __( 'This entry was tagged %2$s.', 'sugarspice' );
-        }
+	if ( '' === $meta_text ) {
+		return;
+	}
 
-    } else {
-        // But this blog has loads of categories so we should probably display them here
-        if ( '' != $tag_list ) {
-            $meta_text = __( 'This entry was posted in %1$s and tagged %2$s.', 'sugarspice' );
-        } else {
-            $meta_text = __( 'This entry was posted in %1$s.', 'sugarspice' );
-        }
-
-    } // end check for categories on this blog
-
-    printf(
-        $meta_text,
-        $category_list,
-        $tag_list
-    );
+	printf( $meta_text, $category_list, $tag_list );
 }
 endif;
 /**

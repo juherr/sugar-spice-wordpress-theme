@@ -1,50 +1,45 @@
 <?php
 /**
  * Archives widget.
+ *
+ * @package sugarspice
  */
 
 class sugarspice_archives_widget extends WP_Widget {
 
+	/**
+	 * Set up the widget.
+	 */
 	public function __construct() {
-	    parent::__construct(
-    	    'sugarspice_archives_widget',
-        	__('Sugar & Spice: Archives / Categories / Pages List', 'sugarspice'),
-        	array(
-	            'classname' => 'sugarspice_archives_widget',
-    	        'description' => __('Displays a list of monthly archives, categories or pages in two columns.', 'sugarspice')
-        	)
-    	);
+		parent::__construct(
+			'sugarspice_archives_widget',
+			__( 'Sugar & Spice: Archives / Categories / Pages List', 'sugarspice' ),
+			array(
+				'classname'   => 'sugarspice_archives_widget',
+				'description' => __( 'Displays a list of monthly archives, categories or pages in two columns.', 'sugarspice' ),
+			)
+		);
 	}
 
 	/**
-	 * Widget setup.
-	 */
-	//function sugarspice_archives_widget() {
-		/* Widget settings. */
-	//	$widget_ops = array( 'classname' => 'sugarspice_archives_widget', 'description' => __('Displays a list of monthly archives, categories or pages in two columns.', 'sugarspice') );
-
-		/* Widget control settings. */
-	//	$control_ops = array( 'width' => 250, 'height' => 350, 'id_base' => 'sugarspice_archives_widget' );
-
-		/* Create the widget. */
-	//	$this->WP_Widget( 'sugarspice_archives_widget', __('Sugar & Spice: Archives / Categories / Pages List', 'sugarspice'), $widget_ops, $control_ops );
-	//}
-
-	/**
 	 * How to display the widget on the screen.
+	 *
+	 * @param array $args     Display arguments.
+	 * @param array $instance Saved values.
+	 * @return void
 	 */
 	public function widget( $args, $instance ) {
-		$title         = apply_filters( 'widget_title', isset( $instance['title'] ) ? $instance['title'] : '' );
-		$type          = isset( $instance['type'] ) ? $instance['type'] : 'archives';
+		$title         = apply_filters( 'widget_title', $instance['title'] ?? '', $instance, $this->id_base );
+		$type          = $instance['type'] ?? 'archives';
 		$before_widget = isset( $args['before_widget'] ) ? $args['before_widget'] : '';
 		$after_widget  = isset( $args['after_widget'] ) ? $args['after_widget'] : '';
 		$before_title  = isset( $args['before_title'] ) ? $args['before_title'] : '';
 		$after_title   = isset( $args['after_title'] ) ? $args['after_title'] : '';
 
-		echo $before_widget;
+		echo $before_widget; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		if ( $title ) {
-			echo $before_title . esc_html( $title ) . $after_title;
+			echo $before_title . esc_html( $title ) . $after_title; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		$items = $this->get_items_by_type( $type );
@@ -63,7 +58,7 @@ class sugarspice_archives_widget extends WP_Widget {
 		</div>
 		<?php
 
-		echo $after_widget;
+		echo $after_widget; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -96,22 +91,33 @@ class sugarspice_archives_widget extends WP_Widget {
 
 	/**
 	 * Update the widget settings.
+	 *
+	 * @param array $new_instance New values.
+	 * @param array $old_instance Old values.
+	 * @return array
 	 */
 	public function update( $new_instance, $old_instance ) {
-		$instance = $old_instance;
+		$instance = array();
 
-		$instance['title'] = sanitize_text_field( $new_instance['title'] );
-		$instance['type'] = in_array( $new_instance['type'], array( 'archives', 'categories', 'pages' ), true ) ? $new_instance['type'] : 'archives';
+		$instance['title'] = sanitize_text_field( $new_instance['title'] ?? '' );
+		$instance['type']  = in_array( $new_instance['type'] ?? '', array( 'archives', 'categories', 'pages' ), true ) ? $new_instance['type'] : 'archives';
 
 		return $instance;
 	}
 
-
+	/**
+	 * Display the widget form in the admin area.
+	 *
+	 * @param array $instance Current values.
+	 * @return void
+	 */
 	public function form( $instance ) {
-
-		/* Set up some default widget settings. */
-		$defaults = array( 'title' => __( 'Archives', 'sugarspice' ), 'type' => 'archives' );
-		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
+		$defaults = array(
+			'title' => __( 'Archives', 'sugarspice' ),
+			'type'  => 'archives',
+		);
+		$instance = wp_parse_args( (array) $instance, $defaults );
+		?>
 
 		<!-- Widget Title: Text Input -->
 		<p>
@@ -124,9 +130,9 @@ class sugarspice_archives_widget extends WP_Widget {
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'type' ) ); ?>"><?php esc_html_e( 'Type', 'sugarspice' ); ?>:</label>
 			<select id="<?php echo esc_attr( $this->get_field_id( 'type' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'type' ) ); ?>" class="widefat type" style="width:100%;">
-				<option value="archives" <?php selected( 'archives', $instance['type'] ); ?>><?php esc_html_e( 'archives', 'sugarspice' ); ?></option>
-				<option value="categories" <?php selected( 'categories', $instance['type'] ); ?>><?php esc_html_e( 'categories', 'sugarspice' ); ?></option>
-				<option value="pages" <?php selected( 'pages', $instance['type'] ); ?>><?php esc_html_e( 'pages', 'sugarspice' ); ?></option>
+				<option value="archives" <?php selected( 'archives', $instance['type'] ); ?>><?php esc_html_e( 'Archives', 'sugarspice' ); ?></option>
+				<option value="categories" <?php selected( 'categories', $instance['type'] ); ?>><?php esc_html_e( 'Categories', 'sugarspice' ); ?></option>
+				<option value="pages" <?php selected( 'pages', $instance['type'] ); ?>><?php esc_html_e( 'Pages', 'sugarspice' ); ?></option>
 			</select>
 		</p>
 

@@ -7,13 +7,17 @@
 
 /**
  * Redirect legacy options page requests to the Customizer.
+ *
+ * @return void
  */
 function sugarspice_redirect_legacy_theme_options() {
 	if ( ! is_admin() || ! current_user_can( 'edit_theme_options' ) ) {
 		return;
 	}
 
-	if ( empty( $_GET['page'] ) || 'options-framework' !== $_GET['page'] ) {
+	$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+
+	if ( 'options-framework' !== $page ) {
 		return;
 	}
 
@@ -24,6 +28,8 @@ add_action( 'admin_init', 'sugarspice_redirect_legacy_theme_options' );
 
 /**
  * Show a migration notice on the themes screen.
+ *
+ * @return void
  */
 function sugarspice_customizer_migration_notice() {
 	$screen = get_current_screen();

@@ -5,8 +5,6 @@
  * @package sugarspice
  */
 
-declare(strict_types=1);
-
 /**
  * Return available color scheme choices.
  *
@@ -319,7 +317,7 @@ function sugarspice_maybe_migrate_legacy_theme_options() {
 	sugarspice_maybe_set_theme_mod_from_legacy(
 		'disable_responsive',
 		static function () {
-			return 1 == sugarspice_get_theme_option( 'responsive', 0 );
+			return '1' === (string) sugarspice_get_theme_option( 'responsive', 0 );
 		}
 	);
 
@@ -382,8 +380,10 @@ add_action( 'after_setup_theme', 'sugarspice_maybe_migrate_legacy_theme_options'
 
 /**
  * Binds JS handlers to make Theme Customizer preview reload changes asynchronously.
+ *
+ * @return void
  */
 function sugarspice_customize_preview_js() {
-	wp_enqueue_script( 'sugarspice_customizer', get_template_directory_uri() . '/js/customizer.js', array( 'customize-preview' ), sugarspice_get_theme_version(), true );
+	wp_enqueue_script( 'sugarspice_customizer', get_template_directory_uri() . '/js/customizer.js', array( 'customize-preview' ), sugarspice_get_asset_version( 'js/customizer.js' ), true );
 }
 add_action( 'customize_preview_init', 'sugarspice_customize_preview_js' );

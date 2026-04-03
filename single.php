@@ -19,7 +19,7 @@ get_header(); ?>
 					<h2 class="section-title"><span><?php esc_html_e( 'About the author', 'sugarspice' ); ?></span></h2>
 					<div class="avatar author-photo"><?php echo get_avatar( get_the_author_meta( 'ID' ) , 80 ); ?></div>
 					<div class="author-content">
-						<h5><a href="<?php echo esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ); ?>" rel="me"><?php the_author(); ?></a></h5>
+						<h5><a href="<?php echo esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ); ?>" rel="me"><?php echo esc_html( get_the_author() ); ?></a></h5>
 						<?php echo wp_kses_post( wpautop( get_the_author_meta( 'description' ) ) ); ?>
 					</div>
 				</div><!-- .entry-author -->
@@ -29,8 +29,9 @@ get_header(); ?>
 
                 <?php
                     // If comments are open or we have at least one comment, load up the comment template
-					if ( comments_open() || 0 !== get_comments_number() )
+					if ( comments_open() || 0 !== get_comments_number() ) {
 						comments_template();
+					}
 				?>
 
             <?php endwhile; // end of the loop. ?>

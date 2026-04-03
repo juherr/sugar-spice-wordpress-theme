@@ -12,7 +12,9 @@ if ( ! function_exists( 'sugarspice_excerpt_length' ) ) {
 	 * @param int $length Existing excerpt length.
 	 * @return int
 	 */
-	function sugarspice_excerpt_length( $length ) {
+	function sugarspice_excerpt_length( int $length ): int {
+		unset( $length );
+
 		return 40;
 	}
 }
@@ -25,7 +27,9 @@ if ( ! function_exists( 'sugarspice_excerpt_more' ) ) {
 	 * @param string $more Existing excerpt suffix.
 	 * @return string
 	 */
-	function sugarspice_excerpt_more( $more ) {
+	function sugarspice_excerpt_more( string $more ): string {
+		unset( $more );
+
 		return '...';
 	}
 }

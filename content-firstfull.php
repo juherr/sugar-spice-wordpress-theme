@@ -13,7 +13,7 @@ if ( ! is_paged() && isset( $wp_query->current_post ) && 0 === (int) $wp_query->
 ?>
     <article id="post-<?php the_ID(); ?>" <?php post_class('firstfull'); ?>>
         <header class="entry-header">
-            <h1 class="entry-title"><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a></h1>
+            <h1 class="entry-title"><a href="<?php echo esc_url( get_permalink() ); ?>" rel="bookmark"><?php the_title(); ?></a></h1>
 
             <div class="entry-meta">
                 <?php sugarspice_posted_on(); ?>
