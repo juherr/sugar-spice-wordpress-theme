@@ -1,5 +1,7 @@
 <?php
 /**
+ * Full post content template.
+ *
  * @package Sugar & Spice
  */
 ?>
@@ -14,7 +16,7 @@
 	</header><!-- .entry-header -->
 
 	<div class="entry-content">
-	        <?php the_content( esc_html__( 'Continue reading &rarr;', 'sugarspice' ) ); ?>
+		<?php the_content( esc_html__( 'Continue reading &rarr;', 'sugarspice' ) ); ?>
 	</div><!-- .entry-content -->
 
 	<footer class="entry-meta bottom">

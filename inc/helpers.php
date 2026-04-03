@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Theme helper functions.
  *
@@ -10,19 +12,19 @@
  *
  * @return void
  */
-function sugarspice_prefooter_class() {
+function sugarspice_prefooter_class(): void {
 	$count = 0;
 
 	if ( is_active_sidebar( 'prefooter-1' ) ) {
-		$count++;
+		++$count;
 	}
 
 	if ( is_active_sidebar( 'prefooter-2' ) ) {
-		$count++;
+		++$count;
 	}
 
 	if ( is_active_sidebar( 'prefooter-3' ) ) {
-		$count++;
+		++$count;
 	}
 
 	$class = '';
@@ -43,11 +45,11 @@ function sugarspice_prefooter_class() {
  *
  * @return string
  */
-function sugarspice_get_theme_version() {
-	$theme = wp_get_theme();
+function sugarspice_get_theme_version(): string {
+	$theme   = wp_get_theme();
 	$version = $theme->get( 'Version' );
 
-	return $version ? $version : '1.0.0';
+	return $version ? (string) $version : '1.0.0';
 }
 
 /**
@@ -55,7 +57,7 @@ function sugarspice_get_theme_version() {
  *
  * @return string
  */
-function sugarspice_get_legacy_options_key() {
+function sugarspice_get_legacy_options_key(): string {
 	$stylesheet = (string) get_option( 'stylesheet' );
 
 	return (string) preg_replace( '/\W/', '_', strtolower( $stylesheet ) );
@@ -66,7 +68,7 @@ function sugarspice_get_legacy_options_key() {
  *
  * @return array<string,mixed>
  */
-function sugarspice_get_legacy_options() {
+function sugarspice_get_legacy_options(): array {
 	$options = get_option( sugarspice_get_legacy_options_key(), array() );
 
 	return is_array( $options ) ? $options : array();
@@ -76,27 +78,27 @@ function sugarspice_get_legacy_options() {
  * Return a normalized legacy theme option value.
  *
  * @param string $name Option key.
- * @param mixed  $default Default value.
+ * @param mixed  $fallback Default value.
  * @return mixed
  */
-function sugarspice_get_theme_option( $name, $default = false ) {
+function sugarspice_get_theme_option( string $name, $fallback = false ) {
 	$legacy_options = sugarspice_get_legacy_options();
 
 	if ( array_key_exists( $name, $legacy_options ) ) {
 		return $legacy_options[ $name ];
 	}
 
-	return $default;
+	return $fallback;
 }
 
 /**
  * Return a theme setting with Customizer-first fallback to legacy options.
  *
  * @param string $name Setting key.
- * @param mixed  $default Default value.
+ * @param mixed  $fallback Default value.
  * @return mixed
  */
-function sugarspice_get_setting( $name, $default = false ) {
+function sugarspice_get_setting( string $name, $fallback = false ) {
 	$theme_mod = get_theme_mod( $name, null );
 
 	if ( null !== $theme_mod ) {
@@ -107,8 +109,8 @@ function sugarspice_get_setting( $name, $default = false ) {
 		return '1' === (string) sugarspice_get_theme_option( 'responsive', 0 );
 	}
 
-	if ( 0 === strpos( $name, 'display_post_meta_' ) ) {
-		$meta_key = str_replace( 'display_post_meta_', '', $name );
+	if ( str_starts_with( $name, 'display_post_meta_' ) ) {
+		$meta_key    = str_replace( 'display_post_meta_', '', $name );
 		$legacy_meta = sugarspice_get_theme_option( 'meta_data', array() );
 
 		if ( is_array( $legacy_meta ) && array_key_exists( $meta_key, $legacy_meta ) ) {
@@ -118,7 +120,7 @@ function sugarspice_get_setting( $name, $default = false ) {
 		return true;
 	}
 
-	return sugarspice_get_theme_option( $name, $default );
+	return sugarspice_get_theme_option( $name, $fallback );
 }
 
 /**
@@ -126,7 +128,7 @@ function sugarspice_get_setting( $name, $default = false ) {
  *
  * @return string
  */
-function sugarspice_get_legacy_logo_url() {
+function sugarspice_get_legacy_logo_url(): string {
 	$logo_url = sugarspice_get_theme_option( 'logo_image', '' );
 
 	return is_string( $logo_url ) ? $logo_url : '';
@@ -137,7 +139,7 @@ function sugarspice_get_legacy_logo_url() {
  *
  * @return string
  */
-function sugarspice_get_legacy_favicon_url() {
+function sugarspice_get_legacy_favicon_url(): string {
 	$favicon_url = sugarspice_get_theme_option( 'favicon', '' );
 
 	return is_string( $favicon_url ) ? $favicon_url : '';
@@ -148,7 +150,7 @@ function sugarspice_get_legacy_favicon_url() {
  *
  * @return string
  */
-function sugarspice_get_signature_image_url() {
+function sugarspice_get_signature_image_url(): string {
 	$attachment_id = (int) sugarspice_get_setting( 'signature_image_id', 0 );
 
 	if ( $attachment_id > 0 ) {
@@ -170,7 +172,7 @@ function sugarspice_get_signature_image_url() {
  * @param string $key Meta key.
  * @return bool
  */
-function sugarspice_show_post_meta( $key ) {
+function sugarspice_show_post_meta( string $key ): bool {
 	$allowed = array( 'author', 'date', 'comments' );
 
 	if ( ! in_array( $key, $allowed, true ) ) {
@@ -184,15 +186,15 @@ function sugarspice_show_post_meta( $key ) {
  * Return a validated layout option.
  *
  * @param string $name Option key.
- * @param string $default Default layout.
+ * @param string $fallback Default layout.
  * @return string
  */
-function sugarspice_get_layout_option( $name, $default = 'full' ) {
-	$layout = (string) sugarspice_get_setting( $name, $default );
+function sugarspice_get_layout_option( string $name, string $fallback = 'full' ): string {
+	$layout          = (string) sugarspice_get_setting( $name, $fallback );
 	$allowed_layouts = array( 'excerpt', 'full', 'firstfull' );
 
 	if ( ! in_array( $layout, $allowed_layouts, true ) ) {
-		return $default;
+		return $fallback;
 	}
 
 	return $layout;
@@ -206,10 +208,10 @@ function sugarspice_get_layout_option( $name, $default = 'full' ) {
  * @param string $background Optional background color.
  * @return string
  */
-function sugarspice_css_output( $selectors, $color = '', $background = '' ) {
-	$output = '';
-	$color = $color ? sanitize_hex_color( $color ) : '';
-	$background = $background ? sanitize_hex_color( $background ) : '';
+function sugarspice_css_output( string $selectors, string $color = '', string $background = '' ): string {
+	$output     = '';
+	$color      = '' !== $color ? sanitize_hex_color( $color ) : '';
+	$background = '' !== $background ? sanitize_hex_color( $background ) : '';
 
 	if ( ! $color && ! $background ) {
 		return $output;
@@ -235,7 +237,7 @@ function sugarspice_css_output( $selectors, $color = '', $background = '' ) {
  * @param string $hex Hex color value.
  * @return array<string,int>
  */
-function sugarspice_hex_to_rgb( $hex ) {
+function sugarspice_hex_to_rgb( string $hex ): array {
 	$hex = preg_replace( '/#/', '', (string) $hex );
 
 	if ( 3 === strlen( $hex ) ) {

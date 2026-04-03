@@ -11,9 +11,12 @@
  * See: http://jetpack.me/support/infinite-scroll/
  */
 function sugarspice_jetpack_setup() {
-	add_theme_support( 'infinite-scroll', array(
-		'container'     => 'primary',
-		'footer'        => 'footer',
-	) );
+	add_theme_support(
+		'infinite-scroll',
+		array(
+			'container' => 'primary',
+			'footer'    => 'footer',
+		)
+	);
 }
 add_action( 'after_setup_theme', 'sugarspice_jetpack_setup' );

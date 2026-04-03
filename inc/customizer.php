@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Sugar & Spice Theme Customizer
  *
@@ -10,7 +12,7 @@
  *
  * @return array<string,string>
  */
-function sugarspice_get_color_scheme_choices() {
+function sugarspice_get_color_scheme_choices(): array {
 	return array(
 		'green'    => __( 'Green', 'sugarspice' ),
 		'emerald'  => __( 'Emerald', 'sugarspice' ),
@@ -30,7 +32,7 @@ function sugarspice_get_color_scheme_choices() {
  *
  * @return array<string,string>
  */
-function sugarspice_get_layout_choices() {
+function sugarspice_get_layout_choices(): array {
 	return array(
 		'excerpt'   => __( 'Excerpts only', 'sugarspice' ),
 		'full'      => __( 'Full posts', 'sugarspice' ),
@@ -44,7 +46,7 @@ function sugarspice_get_layout_choices() {
  * @param string $value Submitted value.
  * @return string
  */
-function sugarspice_sanitize_color_scheme_key( $value ) {
+function sugarspice_sanitize_color_scheme_key( string $value ): string {
 	$choices = array_keys( sugarspice_get_color_scheme_choices() );
 
 	return in_array( $value, $choices, true ) ? $value : 'emerald';
@@ -56,7 +58,7 @@ function sugarspice_sanitize_color_scheme_key( $value ) {
  * @param string $value Submitted value.
  * @return string
  */
-function sugarspice_sanitize_layout( $value ) {
+function sugarspice_sanitize_layout( string $value ): string {
 	$choices = array_keys( sugarspice_get_layout_choices() );
 
 	return in_array( $value, $choices, true ) ? $value : 'full';
@@ -68,7 +70,7 @@ function sugarspice_sanitize_layout( $value ) {
  * @param mixed $checked Submitted value.
  * @return bool
  */
-function sugarspice_sanitize_checkbox( $checked ) {
+function sugarspice_sanitize_checkbox( $checked ): bool {
 	return (bool) $checked;
 }
 
@@ -78,7 +80,7 @@ function sugarspice_sanitize_checkbox( $checked ) {
  * @param mixed $value Submitted value.
  * @return int
  */
-function sugarspice_sanitize_attachment_id( $value ) {
+function sugarspice_sanitize_attachment_id( $value ): int {
 	return max( 0, absint( $value ) );
 }
 
@@ -88,7 +90,7 @@ function sugarspice_sanitize_attachment_id( $value ) {
  * @param string   $theme_mod Theme mod key.
  * @param callable $callback Callback returning the migrated value.
  */
-function sugarspice_maybe_set_theme_mod_from_legacy( $theme_mod, $callback ) {
+function sugarspice_maybe_set_theme_mod_from_legacy( string $theme_mod, callable $callback ): void {
 	if ( null !== get_theme_mod( $theme_mod, null ) ) {
 		return;
 	}
@@ -101,7 +103,7 @@ function sugarspice_maybe_set_theme_mod_from_legacy( $theme_mod, $callback ) {
  *
  * @param WP_Customize_Manager $wp_customize Theme Customizer object.
  */
-function sugarspice_customize_register( $wp_customize ) {
+function sugarspice_customize_register( WP_Customize_Manager $wp_customize ): void {
 	$blogname = $wp_customize->get_setting( 'blogname' );
 	$blogdescription = $wp_customize->get_setting( 'blogdescription' );
 	$header_textcolor = $wp_customize->get_setting( 'header_textcolor' );
@@ -281,7 +283,7 @@ add_action( 'customize_register', 'sugarspice_customize_register' );
 /**
  * Migrate legacy options framework values to the Customizer.
  */
-function sugarspice_maybe_migrate_legacy_theme_options() {
+function sugarspice_maybe_migrate_legacy_theme_options(): void {
 	if ( get_option( 'sugarspice_customizer_migrated' ) ) {
 		return;
 	}
@@ -383,7 +385,13 @@ add_action( 'after_setup_theme', 'sugarspice_maybe_migrate_legacy_theme_options'
  *
  * @return void
  */
-function sugarspice_customize_preview_js() {
-	wp_enqueue_script( 'sugarspice_customizer', get_template_directory_uri() . '/js/customizer.js', array( 'customize-preview' ), sugarspice_get_asset_version( 'js/customizer.js' ), true );
+function sugarspice_customize_preview_js(): void {
+	wp_enqueue_script(
+		'sugarspice-customizer',
+		get_template_directory_uri() . '/js/customizer.js',
+		array( 'customize-preview' ),
+		sugarspice_get_asset_version( 'js/customizer.js' ),
+		true
+	);
 }
 add_action( 'customize_preview_init', 'sugarspice_customize_preview_js' );

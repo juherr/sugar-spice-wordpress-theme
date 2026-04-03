@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
 /**
- * Custom functions that act independently of the theme templates
+ * Custom functions that act independently of the theme templates.
  *
- * Eventually, some of the functionality here could be replaced by core features
+ * Eventually, some of the functionality here could be replaced by core features.
  *
- * @package Sugar & Spice
+ * @package sugarspice
  */
 
 /**
@@ -13,7 +15,7 @@
  * @param array $args Menu arguments.
  * @return array
  */
-function sugarspice_page_menu_args( $args ) {
+function sugarspice_page_menu_args( array $args ): array {
 	$args['show_home'] = true;
 
 	return $args;
@@ -26,12 +28,12 @@ add_filter( 'wp_page_menu_args', 'sugarspice_page_menu_args' );
  * @param array $classes Body classes.
  * @return array
  */
-function sugarspice_body_classes( $classes ) {
+function sugarspice_body_classes( array $classes ): array {
 	if ( ! is_active_sidebar( 'sidebar-1' ) || is_page_template( 'full-width-page.php' ) || is_page_template( 'full-width-no-title-page.php' ) ) {
 		$classes[] = 'full-width';
 	}
 
-	// Adds a class of group-blog to blogs with more than 1 published author
+	// Add a group-blog class on multi-author sites.
 	if ( is_multi_author() ) {
 		$classes[] = 'group-blog';
 	}
@@ -47,7 +49,7 @@ add_filter( 'body_class', 'sugarspice_body_classes' );
  * @param int    $id  Attachment ID.
  * @return string
  */
-function sugarspice_enhanced_image_navigation( $url, $id ) {
+function sugarspice_enhanced_image_navigation( string $url, int $id ): string {
 	if ( ! is_attachment() || ! wp_attachment_is_image( $id ) ) {
 		return $url;
 	}
@@ -69,10 +71,10 @@ add_filter( 'attachment_link', 'sugarspice_enhanced_image_navigation', 10, 2 );
  * @param string $signature Existing content.
  * @return string
  */
-function sugarspice_aftercontent( $signature = '' ) {
-	global $post;
+function sugarspice_aftercontent( string $signature = '' ): string {
+	$post = get_post();
 
-	if ( empty( $post ) || 'post' !== $post->post_type || is_home() ) {
+	if ( ! $post instanceof WP_Post || 'post' !== $post->post_type || is_home() ) {
 		return $signature;
 	}
 
@@ -91,7 +93,7 @@ add_filter( 'the_content', 'sugarspice_aftercontent' );
  *
  * @return void
  */
-function sugarspice_color_scheme() {
+function sugarspice_color_scheme(): void {
 	$colors = array(
 		'green'    => '#97C379',
 		'emerald'  => '#36AB8A',

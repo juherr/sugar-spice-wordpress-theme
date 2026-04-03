@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Widget loading and sidebar registration.
  *
@@ -11,58 +13,55 @@ require_once get_template_directory() . '/inc/widgets/archives-widget.php';
 require_once get_template_directory() . '/inc/widgets/social-widget.php';
 
 /**
- * Register widget areas and custom widgets.
+ * Return shared sidebar arguments.
  *
- * @return void
+ * @param string $name Sidebar name.
+ * @param string $id Sidebar ID.
+ * @param string $description Sidebar description.
+ * @return array<string,string>
  */
-function sugarspice_widgets_init() {
-	register_sidebar(
-		array(
-			'name'          => __( 'Sidebar', 'sugarspice' ),
-			'id'            => 'sidebar-1',
-			'description'   => __( 'Main widget area.', 'sugarspice' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget'  => '</aside>',
-			'before_title'  => '<h3 class="widget-title"><span>',
-			'after_title'   => '</span></h3>',
-		)
+function sugarspice_get_sidebar_args( string $name, string $id, string $description ): array {
+	return array(
+		'name'          => $name,
+		'id'            => $id,
+		'description'   => $description,
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget'  => '</aside>',
+		'before_title'  => '<h3 class="widget-title"><span>',
+		'after_title'   => '</span></h3>',
+	);
+}
+
+/**
+ * Register widget areas and custom widgets.
+ */
+function sugarspice_widgets_init(): void {
+	$sidebars = array(
+		sugarspice_get_sidebar_args(
+			__( 'Sidebar', 'sugarspice' ),
+			'sidebar-1',
+			__( 'Main widget area.', 'sugarspice' )
+		),
+		sugarspice_get_sidebar_args(
+			__( 'Prefooter Area One', 'sugarspice' ),
+			'prefooter-1',
+			__( 'First widget area above the footer.', 'sugarspice' )
+		),
+		sugarspice_get_sidebar_args(
+			__( 'Prefooter Area Two', 'sugarspice' ),
+			'prefooter-2',
+			__( 'Second widget area above the footer.', 'sugarspice' )
+		),
+		sugarspice_get_sidebar_args(
+			__( 'Prefooter Area Three', 'sugarspice' ),
+			'prefooter-3',
+			__( 'Third widget area above the footer.', 'sugarspice' )
+		),
 	);
 
-	register_sidebar(
-		array(
-			'name'          => __( 'Prefooter Area One', 'sugarspice' ),
-			'id'            => 'prefooter-1',
-			'description'   => __( 'First widget area above the footer.', 'sugarspice' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget'  => '</aside>',
-			'before_title'  => '<h3 class="widget-title"><span>',
-			'after_title'   => '</span></h3>',
-		)
-	);
-
-	register_sidebar(
-		array(
-			'name'          => __( 'Prefooter Area Two', 'sugarspice' ),
-			'id'            => 'prefooter-2',
-			'description'   => __( 'Second widget area above the footer.', 'sugarspice' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget'  => '</aside>',
-			'before_title'  => '<h3 class="widget-title"><span>',
-			'after_title'   => '</span></h3>',
-		)
-	);
-
-	register_sidebar(
-		array(
-			'name'          => __( 'Prefooter Area Three', 'sugarspice' ),
-			'id'            => 'prefooter-3',
-			'description'   => __( 'Third widget area above the footer.', 'sugarspice' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget'  => '</aside>',
-			'before_title'  => '<h3 class="widget-title"><span>',
-			'after_title'   => '</span></h3>',
-		)
-	);
+	foreach ( $sidebars as $sidebar ) {
+		register_sidebar( $sidebar );
+	}
 
 	register_widget( 'sugarspice_contact_widget' );
 	register_widget( 'sugarspice_about_widget' );

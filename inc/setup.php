@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Theme setup and registration.
  *
@@ -9,21 +11,17 @@
  * Set the default content width.
  *
  * This runs early so plugins can still filter it during setup.
- *
- * @return void
  */
-function sugarspice_set_content_width() {
+function sugarspice_set_content_width(): void {
 	$GLOBALS['content_width'] = (int) apply_filters( 'sugarspice_content_width', 600 );
 }
 add_action( 'after_setup_theme', 'sugarspice_set_content_width', 0 );
 
 if ( ! function_exists( 'sugarspice_setup' ) ) :
 	/**
-	 * Sets up theme defaults and registers support for various WordPress features.
-	 *
-	 * @return void
+	 * Set up theme defaults and register supported WordPress features.
 	 */
-	function sugarspice_setup() {
+	function sugarspice_setup(): void {
 		load_theme_textdomain( 'sugarspice', get_template_directory() . '/languages' );
 
 		add_theme_support( 'automatic-feed-links' );
@@ -35,6 +33,7 @@ if ( ! function_exists( 'sugarspice_setup' ) ) :
 		add_theme_support( 'align-wide' );
 		add_theme_support( 'editor-styles' );
 		add_editor_style( 'style.css' );
+
 		set_post_thumbnail_size( 210, 210, true );
 
 		add_theme_support(
@@ -65,17 +64,26 @@ if ( ! function_exists( 'sugarspice_setup' ) ) :
 			)
 		);
 
-		add_theme_support( 'html5', array( 'comment-list', 'comment-form', 'search-form', 'gallery', 'caption', 'style', 'script' ) );
+		add_theme_support(
+			'html5',
+			array(
+				'comment-list',
+				'comment-form',
+				'search-form',
+				'gallery',
+				'caption',
+				'style',
+				'script',
+			)
+		);
 	}
 endif;
 add_action( 'after_setup_theme', 'sugarspice_setup' );
 
 /**
  * Adjust content width depending on the current template layout.
- *
- * @return void
  */
-function sugarspice_content_width() {
+function sugarspice_content_width(): void {
 	if ( ! is_active_sidebar( 'sidebar-1' ) || is_page_template( 'full-width-page.php' ) ) {
 		$GLOBALS['content_width'] = (int) apply_filters( 'sugarspice_wide_content_width', 940 );
 	}

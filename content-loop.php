@@ -1,17 +1,19 @@
 <?php
 /**
+ * Loop content template.
+ *
  * @package Sugar & Spice
  */
 ?>
 
-<article id="post-<?php the_ID(); ?>" <?php post_class('excerpt cf'); ?>>
-    <div class="post-thumbnail">
+<article id="post-<?php the_ID(); ?>" <?php post_class( 'excerpt cf' ); ?>>
+	<div class="post-thumbnail">
 	<?php if ( has_post_thumbnail() ) { ?>
-	   <a href="<?php echo esc_url( get_permalink() ); ?>">
-	     <?php the_post_thumbnail(); ?>
-	   </a>	
+		<a href="<?php echo esc_url( get_permalink() ); ?>">
+		<?php the_post_thumbnail(); ?>
+		</a> 
 	<?php } ?>
-    </div>
+	</div>
 	<header class="entry-header">
 		<h1 class="entry-title"><a href="<?php echo esc_url( get_permalink() ); ?>" rel="bookmark"><?php the_title(); ?></a></h1>
 
@@ -24,14 +26,16 @@
 
 	<div class="entry-summary">
 		<?php echo wp_kses_post( get_the_excerpt() ); ?>
-	        <a class="more-link entry-meta" href="<?php echo esc_url( get_permalink() ); ?>"><?php esc_html_e( 'Continue reading &rarr;', 'sugarspice' ); ?></a>
-        
+			<a class="more-link entry-meta" href="<?php echo esc_url( get_permalink() ); ?>"><?php esc_html_e( 'Continue reading &rarr;', 'sugarspice' ); ?></a>
+		
 		<?php
-			wp_link_pages( array(
-				'before' => '<div class="page-links">' . __( 'Pages:', 'sugarspice' ),
-				'after'  => '</div>',
-			) );
-		?>
+			wp_link_pages(
+				array(
+					'before' => '<div class="page-links">' . __( 'Pages:', 'sugarspice' ),
+					'after'  => '</div>',
+				)
+			);
+			?>
 	</div><!-- .entry-summary -->
 
 </article><!-- #post-## -->

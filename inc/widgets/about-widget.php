@@ -1,11 +1,27 @@
 <?php
+declare(strict_types=1);
+
 /**
  * About widget.
  *
  * @package sugarspice
  */
-
 class sugarspice_about_widget extends WP_Widget {
+
+	/**
+	 * Return default widget values.
+	 *
+	 * @return array<string,string>
+	 */
+	protected function get_defaults(): array {
+		return array(
+			'title'     => __( 'About', 'sugarspice' ),
+			'text'      => '',
+			'image'     => '',
+			'url'       => '',
+			'read_more' => __( 'Read more', 'sugarspice' ),
+		);
+	}
 
 	/**
 	 * Set up the widget.
@@ -29,24 +45,26 @@ class sugarspice_about_widget extends WP_Widget {
 	 * @return void
 	 */
 	public function widget( $args, $instance ) {
+		$instance      = wp_parse_args( (array) $instance, $this->get_defaults() );
 		$title         = apply_filters( 'widget_title', $instance['title'] ?? '', $instance, $this->id_base );
-		$text          = $instance['text'] ?? '';
-		$image         = $instance['image'] ?? '';
-		$url           = $instance['url'] ?? '';
-		$read_more     = $instance['read_more'] ?? '';
+		$text          = $instance['text'];
+		$image         = $instance['image'];
+		$url           = $instance['url'];
+		$read_more     = $instance['read_more'];
 		$before_widget = isset( $args['before_widget'] ) ? $args['before_widget'] : '';
 		$after_widget  = isset( $args['after_widget'] ) ? $args['after_widget'] : '';
 		$before_title  = isset( $args['before_title'] ) ? $args['before_title'] : '';
 		$after_title   = isset( $args['after_title'] ) ? $args['after_title'] : '';
 
-		echo $before_widget; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wp_kses_post( $before_widget );
 
 		if ( $title ) {
-			echo $before_title . esc_html( $title ) . $after_title; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo wp_kses_post( $before_title ) . esc_html( $title ) . wp_kses_post( $after_title );
 		}
 
 		if ( $image ) {
-			?><img src="<?php echo esc_url( $image ); ?>" class="profile" alt="" loading="lazy" /><?php
+			?><img src="<?php echo esc_url( $image ); ?>" class="profile" alt="" loading="lazy" />
+			<?php
 		}
 
 		if ( $text ) {
@@ -54,10 +72,12 @@ class sugarspice_about_widget extends WP_Widget {
 		}
 
 		if ( $url && $read_more ) {
-			?><a href="<?php echo esc_url( $url ); ?>" class="button"><?php echo esc_html( $read_more ); ?></a><?php
+			?>
+			<a href="<?php echo esc_url( $url ); ?>" class="button"><?php echo esc_html( $read_more ); ?></a>
+			<?php
 		}
 
-		echo $after_widget; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wp_kses_post( $after_widget );
 	}
 
 	/**
@@ -68,6 +88,8 @@ class sugarspice_about_widget extends WP_Widget {
 	 * @return array
 	 */
 	public function update( $new_instance, $old_instance ) {
+		unset( $old_instance );
+
 		$instance = array();
 
 		$instance['title']     = sanitize_text_field( $new_instance['title'] ?? '' );
@@ -86,45 +108,30 @@ class sugarspice_about_widget extends WP_Widget {
 	 * @return void
 	 */
 	public function form( $instance ) {
-		$defaults = array(
-			'title'     => __( 'About', 'sugarspice' ),
-			'text'      => '',
-			'image'     => '',
-			'url'       => '',
-			'read_more' => __( 'Read more', 'sugarspice' ),
-		);
-		$instance = wp_parse_args( (array) $instance, $defaults );
+		$instance = wp_parse_args( (array) $instance, $this->get_defaults() );
 		?>
-
-		<!-- Widget Title: Text Input -->
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', 'sugarspice' ); ?>:</label>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" value="<?php echo esc_attr( $instance['title'] ); ?>" style="width:90%;" />
+			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $instance['title'] ); ?>" />
 		</p>
-
-		<!-- About text -->
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'text' ) ); ?>"><?php esc_html_e( 'About the author text', 'sugarspice' ); ?>:</label>
 			<textarea id="<?php echo esc_attr( $this->get_field_id( 'text' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'text' ) ); ?>" style="width:96%;" rows="6"><?php echo esc_textarea( $instance['text'] ); ?></textarea>
 		</p>
-
-		<!-- Image -->
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'image' ) ); ?>"><?php esc_html_e( 'Author image URL', 'sugarspice' ); ?>:</label>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'image' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'image' ) ); ?>" value="<?php echo esc_attr( $instance['image'] ); ?>" style="width:90%;" />
+			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'image' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'image' ) ); ?>" type="url" value="<?php echo esc_attr( $instance['image'] ); ?>" />
 			<small><?php esc_html_e( 'Suggested image dimensions: 120x120px or 100x100px. Image will be rounded automatically!', 'sugarspice' ); ?></small>
 		</p>
-		<!-- URL -->
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'url' ) ); ?>"><?php esc_html_e( 'Read more URL', 'sugarspice' ); ?>:</label>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'url' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'url' ) ); ?>" value="<?php echo esc_attr( $instance['url'] ); ?>" style="width:90%;" />
+			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'url' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'url' ) ); ?>" type="url" value="<?php echo esc_attr( $instance['url'] ); ?>" />
 		</p>
-		<!-- Read more -->
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'read_more' ) ); ?>"><?php esc_html_e( 'Read more button text', 'sugarspice' ); ?>:</label>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'read_more' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'read_more' ) ); ?>" value="<?php echo esc_attr( $instance['read_more'] ); ?>" style="width:90%;" />
+			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'read_more' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'read_more' ) ); ?>" type="text" value="<?php echo esc_attr( $instance['read_more'] ); ?>" />
 		</p>
 
-	<?php
+		<?php
 	}
 }

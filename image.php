@@ -9,7 +9,10 @@ get_header(); ?>
 
 	<div id="primary" class="content-area image-attachment">
 
-		<?php while ( have_posts() ) : the_post(); ?>
+		<?php
+		while ( have_posts() ) :
+			the_post();
+			?>
 
 			<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 				<header class="entry-header">
@@ -19,17 +22,24 @@ get_header(); ?>
 						<?php
 							global $post;
 							$metadata = wp_get_attachment_metadata();
-							$width = isset( $metadata['width'] ) ? (int) $metadata['width'] : 0;
-							$height = isset( $metadata['height'] ) ? (int) $metadata['height'] : 0;
-							echo wp_kses_post( sprintf( __( 'Published <span class="entry-date"><time class="entry-date" datetime="%1$s">%2$s</time></span> at <a href="%3$s">%4$s &times; %5$s</a> in <a href="%6$s" rel="gallery">%7$s</a>', 'sugarspice' ),
-								esc_attr( get_the_date( 'c' ) ),
-								esc_html( get_the_date() ),
-								esc_url( wp_get_attachment_url() ),
-								$width,
-								$height,
-								esc_url( get_permalink( $post->post_parent ) ),
-								esc_html( get_the_title( $post->post_parent ) )
-							) );
+							$width    = isset( $metadata['width'] ) ? (int) $metadata['width'] : 0;
+							$height   = isset( $metadata['height'] ) ? (int) $metadata['height'] : 0;
+
+							/* translators: 1: publish date, 2: formatted date, 3: attachment URL, 4: image width, 5: image height, 6: parent post URL, 7: parent post title. */
+							$image_meta_text = __( 'Published <span class="entry-date"><time class="entry-date" datetime="%1$s">%2$s</time></span> at <a href="%3$s">%4$s &times; %5$s</a> in <a href="%6$s" rel="gallery">%7$s</a>', 'sugarspice' );
+
+							echo wp_kses_post(
+								sprintf(
+									$image_meta_text,
+									esc_attr( get_the_date( 'c' ) ),
+									esc_html( get_the_date() ),
+									esc_url( wp_get_attachment_url() ),
+									$width,
+									$height,
+									esc_url( get_permalink( $post->post_parent ) ),
+									esc_html( get_the_title( $post->post_parent ) )
+								)
+							);
 
 							edit_post_link( __( 'Edit', 'sugarspice' ), '<span class="edit-link">', '</span>' );
 						?>
@@ -56,10 +66,12 @@ get_header(); ?>
 
 					<?php
 						the_content();
-						wp_link_pages( array(
-							'before' => '<div class="page-links">' . __( 'Pages:', 'sugarspice' ),
-							'after'  => '</div>',
-						) );
+						wp_link_pages(
+							array(
+								'before' => '<div class="page-links">' . __( 'Pages:', 'sugarspice' ),
+								'after'  => '</div>',
+							)
+						);
 					?>
 				</div><!-- .entry-content -->
 
@@ -68,14 +80,14 @@ get_header(); ?>
 
 			<?php
 				// If comments are open or we have at least one comment, load up the comment template
-				if ( comments_open() || 0 !== get_comments_number() ) {
-					comments_template();
-				}
+			if ( comments_open() || 0 !== get_comments_number() ) {
+				comments_template();
+			}
 			?>
 
 		<?php endwhile; // end of the loop. ?>
 
 	</div><!-- #primary -->
-    
+	
 <?php get_sidebar(); ?>
 <?php get_footer(); ?>

@@ -1,11 +1,26 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Contact widget.
  *
  * @package sugarspice
  */
-
 class sugarspice_contact_widget extends WP_Widget {
+
+	/**
+	 * Return default widget values.
+	 *
+	 * @return array<string,string>
+	 */
+	protected function get_defaults(): array {
+		return array(
+			'title'   => __( 'Contact', 'sugarspice' ),
+			'address' => '',
+			'phone'   => '',
+			'email'   => '',
+		);
+	}
 
 	/**
 	 * Set up the widget.
@@ -29,20 +44,23 @@ class sugarspice_contact_widget extends WP_Widget {
 	 * @return void
 	 */
 	public function widget( $args, $instance ) {
+		$instance      = wp_parse_args( (array) $instance, $this->get_defaults() );
 		$title         = apply_filters( 'widget_title', $instance['title'] ?? '', $instance, $this->id_base );
-		$address       = $instance['address'] ?? '';
-		$phone         = $instance['phone'] ?? '';
-		$email         = $instance['email'] ?? '';
+		$address       = $instance['address'];
+		$phone         = $instance['phone'];
+		$email         = $instance['email'];
 		$before_widget = isset( $args['before_widget'] ) ? $args['before_widget'] : '';
 		$after_widget  = isset( $args['after_widget'] ) ? $args['after_widget'] : '';
 		$before_title  = isset( $args['before_title'] ) ? $args['before_title'] : '';
 		$after_title   = isset( $args['after_title'] ) ? $args['after_title'] : '';
 
-		echo $before_widget; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wp_kses_post( $before_widget );
 
 		if ( $title ) {
-			echo $before_title . esc_html( $title ) . $after_title; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo wp_kses_post( $before_title ) . esc_html( $title ) . wp_kses_post( $after_title );
 		}
+
+		$email_address = antispambot( $email );
 		?>
 		<ul>
 			<?php if ( $address ) : ?>
@@ -61,12 +79,12 @@ class sugarspice_contact_widget extends WP_Widget {
 			<li>
 				<i class="icon-envelope-alt" aria-hidden="true"></i>
 				<b><?php esc_html_e( 'Email', 'sugarspice' ); ?>:</b>
-				<a href="mailto:<?php echo esc_attr( antispambot( $email ) ); ?>"><?php echo esc_html( antispambot( $email ) ); ?></a>
+				<a href="mailto:<?php echo esc_attr( $email_address ); ?>"><?php echo esc_html( $email_address ); ?></a>
 			</li>
 			<?php endif; ?>
 		</ul>
 		<?php
-		echo $after_widget; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wp_kses_post( $after_widget );
 	}
 
 	/**
@@ -77,7 +95,9 @@ class sugarspice_contact_widget extends WP_Widget {
 	 * @return array
 	 */
 	public function update( $new_instance, $old_instance ) {
-		$instance = array();
+		unset( $old_instance );
+
+		$instance            = array();
 		$instance['title']   = sanitize_text_field( $new_instance['title'] ?? '' );
 		$instance['address'] = sanitize_text_field( $new_instance['address'] ?? '' );
 		$instance['phone']   = sanitize_text_field( $new_instance['phone'] ?? '' );
@@ -93,35 +113,24 @@ class sugarspice_contact_widget extends WP_Widget {
 	 * @return void
 	 */
 	public function form( $instance ) {
-		$defaults = array(
-			'title'   => __( 'Contact', 'sugarspice' ),
-			'address' => '',
-			'phone'   => '',
-			'email'   => '',
-		);
-		$instance = wp_parse_args( (array) $instance, $defaults );
+		$instance = wp_parse_args( (array) $instance, $this->get_defaults() );
 		?>
-		
-		<!-- Widget Title -->
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', 'sugarspice' ); ?>:</label>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" value="<?php echo esc_attr( $instance['title'] ); ?>" style="width:90%;" />
+			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $instance['title'] ); ?>" />
 		</p>
-		<!-- Addres -->
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'address' ) ); ?>"><?php esc_html_e( 'Address', 'sugarspice' ); ?>:</label>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'address' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'address' ) ); ?>" value="<?php echo esc_attr( $instance['address'] ); ?>" style="width:90%;" />
+			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'address' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'address' ) ); ?>" type="text" value="<?php echo esc_attr( $instance['address'] ); ?>" />
 		</p>
-		<!-- Phone -->
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'phone' ) ); ?>"><?php esc_html_e( 'Phone', 'sugarspice' ); ?>:</label>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'phone' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'phone' ) ); ?>" value="<?php echo esc_attr( $instance['phone'] ); ?>" style="width:90%;" />
+			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'phone' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'phone' ) ); ?>" type="text" value="<?php echo esc_attr( $instance['phone'] ); ?>" />
 		</p>
-		<!-- Email -->
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'email' ) ); ?>"><?php esc_html_e( 'Email', 'sugarspice' ); ?>:</label>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'email' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'email' ) ); ?>" value="<?php echo esc_attr( $instance['email'] ); ?>" style="width:90%;" />
+			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'email' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'email' ) ); ?>" type="email" value="<?php echo esc_attr( $instance['email'] ); ?>" />
 		</p>        
-	<?php
+		<?php
 	}
 }

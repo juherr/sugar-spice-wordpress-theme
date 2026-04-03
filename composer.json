@@ -1,0 +1,21 @@
+{
+  "name": "juherr/sugar-and-spice",
+  "description": "Development tooling for the Sugar and Spice WordPress theme.",
+  "license": "GPL-2.0-or-later",
+  "type": "project",
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+    "squizlabs/php_codesniffer": "^3.10",
+    "wp-coding-standards/wpcs": "^3.1"
+  },
+  "scripts": {
+    "lint": "phpcs --standard=phpcs.xml",
+    "lint:php": "phpcs --standard=phpcs.xml --extensions=php ."
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "sort-packages": true
+  }
+}
