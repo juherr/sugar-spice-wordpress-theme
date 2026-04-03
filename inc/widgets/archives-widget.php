@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Archives List
+ * Archives widget.
  */
 
 class sugarspice_archives_widget extends WP_Widget {
@@ -33,93 +33,100 @@ class sugarspice_archives_widget extends WP_Widget {
 	/**
 	 * How to display the widget on the screen.
 	 */
-	function widget( $args, $instance ) {
-		extract( $args );
+	public function widget( $args, $instance ) {
+		$title         = apply_filters( 'widget_title', isset( $instance['title'] ) ? $instance['title'] : '' );
+		$type          = isset( $instance['type'] ) ? $instance['type'] : 'archives';
+		$before_widget = isset( $args['before_widget'] ) ? $args['before_widget'] : '';
+		$after_widget  = isset( $args['after_widget'] ) ? $args['after_widget'] : '';
+		$before_title  = isset( $args['before_title'] ) ? $args['before_title'] : '';
+		$after_title   = isset( $args['after_title'] ) ? $args['after_title'] : '';
 
-		/* Our variables from the widget settings. */
-		$title = apply_filters('widget_title', $instance['title'] );
-		$type = $instance['type'];
-
-		/* Before widget (defined by themes). */
 		echo $before_widget;
 
-		/* Display the widget title if one was input (before and after defined by themes). */
-		if ( $title )
-			echo $before_title . $title . $after_title;
+		if ( $title ) {
+			echo $before_title . esc_html( $title ) . $after_title;
+		}
 
+		$items = $this->get_items_by_type( $type );
+		$page_n = count( $items );
+		$page_col = (int) ceil( $page_n / 2 );
+		$page_left = array_slice( $items, 0, $page_col );
+		$page_right = array_slice( $items, $page_col );
 		?>
-
-        	<div class="archive-list">
-
-			<?php
-				if($type == 'pages') {
-					$page_s = explode('</li>',wp_list_pages('title_li=&echo=0&depth=1&style=none'));
-				}elseif ($type == 'categories'){
-					$page_s = explode('</li>',wp_list_categories('show_count=0&title_li=&echo=0&depth=-1'));
-				}else {
-                    $page_s = explode('</li>',wp_get_archives('type=monthly&echo=0'));
-				}
-				$page_n = count($page_s) - 1;
-				$page_col = round($page_n / 2);
-        $page_left = '';
-        $page_right = '';
-					for ($i=0;$i<$page_n;$i++){
-					 if ($i<$page_col){
-					  $page_left = $page_left.''.$page_s[$i].'</li>';
-					 }
-					 elseif ($i>=$page_col){
-					  $page_right = $page_right.''.$page_s[$i].'</li>';
-					 }
-					}
-					?>
-					<ul class="archive-left">
-					<?php echo $page_left; ?>
-					</ul>
-					<ul class="archive-right">
-					<?php echo $page_right; ?>
-					</ul>
-				</div>
-
+		<div class="archive-list">
+			<ul class="archive-left">
+				<?php echo implode( '', $page_left ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			</ul>
+			<ul class="archive-right">
+				<?php echo implode( '', $page_right ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			</ul>
+		</div>
 		<?php
 
-		/* After widget (defined by themes). */
 		echo $after_widget;
+	}
+
+	/**
+	 * Get widget items for the selected list type.
+	 *
+	 * @param string $type Selected list type.
+	 * @return array<int,string>
+	 */
+	protected function get_items_by_type( $type ) {
+		$type = in_array( $type, array( 'archives', 'categories', 'pages' ), true ) ? $type : 'archives';
+
+		if ( 'pages' === $type ) {
+			$markup = wp_list_pages( 'title_li=&echo=0&depth=1&style=list' );
+		} elseif ( 'categories' === $type ) {
+			$markup = wp_list_categories( 'show_count=0&title_li=&echo=0&depth=-1&style=list' );
+		} else {
+			$markup = wp_get_archives( 'type=monthly&echo=0' );
+		}
+
+		$items = preg_split( '/<\/li>\s*/', trim( (string) $markup ) );
+		$items = array_filter( (array) $items );
+
+		return array_map(
+			static function ( $item ) {
+				return $item . '</li>';
+			},
+			$items
+		);
 	}
 
 	/**
 	 * Update the widget settings.
 	 */
-	function update( $new_instance, $old_instance ) {
+	public function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
 
-		/* Strip tags for title and name to remove HTML (important for text inputs). */
-		$instance['title'] = strip_tags( $new_instance['title'] );
-		$instance['type'] = $new_instance['type'];
+		$instance['title'] = sanitize_text_field( $new_instance['title'] );
+		$instance['type'] = in_array( $new_instance['type'], array( 'archives', 'categories', 'pages' ), true ) ? $new_instance['type'] : 'archives';
 
 		return $instance;
 	}
 
 
-	function form( $instance ) {
+	public function form( $instance ) {
 
 		/* Set up some default widget settings. */
-		$defaults = array( 'title' => __('Archives', 'sugarspice'), 'type' => 'archives');
+		$defaults = array( 'title' => __( 'Archives', 'sugarspice' ), 'type' => 'archives' );
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 
 		<!-- Widget Title: Text Input -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e('Title','sugarspice') ?>:</label>
-			<input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" style="width:90%;" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', 'sugarspice' ); ?>:</label>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" value="<?php echo esc_attr( $instance['title'] ); ?>" style="width:90%;" />
 		</p>
 
 
 		<!-- Type -->
 		<p>
-			<label for="<?php echo $this->get_field_id('type'); ?>"><?php _e('Type','sugarspice') ?>:</label>
-			<select id="<?php echo $this->get_field_id('type'); ?>" name="<?php echo $this->get_field_name('type'); ?>" class="widefat type" style="width:100%;">
-				<option value='archives' <?php if ('archives' == $instance['type']) echo 'selected="selected"'; ?>><?php _e('archives','sugarspice') ?></option>
-				<option value='categories' <?php if ('categories' == $instance['type']) echo 'selected="selected"'; ?>><?php _e('categories','sugarspice') ?></option>
-				<option value='pages' <?php if ('pages' == $instance['type']) echo 'selected="selected"'; ?>><?php _e('pages','sugarspice') ?></option>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'type' ) ); ?>"><?php esc_html_e( 'Type', 'sugarspice' ); ?>:</label>
+			<select id="<?php echo esc_attr( $this->get_field_id( 'type' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'type' ) ); ?>" class="widefat type" style="width:100%;">
+				<option value="archives" <?php selected( 'archives', $instance['type'] ); ?>><?php esc_html_e( 'archives', 'sugarspice' ); ?></option>
+				<option value="categories" <?php selected( 'categories', $instance['type'] ); ?>><?php esc_html_e( 'categories', 'sugarspice' ); ?></option>
+				<option value="pages" <?php selected( 'pages', $instance['type'] ); ?>><?php esc_html_e( 'pages', 'sugarspice' ); ?></option>
 			</select>
 		</p>
 
@@ -127,5 +134,3 @@ class sugarspice_archives_widget extends WP_Widget {
 	<?php
 	}
 }
-
-?>

@@ -8,6 +8,7 @@
  */
 
 get_header(); ?>
+	<?php $archive_layout = sugarspice_get_layout_option( 'ap_layout', 'excerpt' ); ?>
 
 	<div id="primary" class="content-area">  
 
@@ -27,7 +28,7 @@ get_header(); ?>
 							 * what author we're dealing with (if that is the case).
 							*/
 							the_post();
-							printf( __( 'Author: %s', 'sugarspice' ), '<span class="vcard">' . get_the_author() . '</span>' );
+							printf( __( 'Author: %s', 'sugarspice' ), '<span class="vcard">' . esc_html( get_the_author() ) . '</span>' );
 							/* Since we called the_post() above, we need to
 							 * rewind the loop back to the beginning that way
 							 * we can run the loop properly, in full.
@@ -35,13 +36,13 @@ get_header(); ?>
 							rewind_posts();
 
 						elseif ( is_day() ) :
-							printf( __( 'Day: %s', 'sugarspice' ), '<span>' . get_the_date() . '</span>' );
+							printf( __( 'Day: %s', 'sugarspice' ), '<span>' . esc_html( get_the_date() ) . '</span>' );
 
 						elseif ( is_month() ) :
-							printf( __( 'Month: %s', 'sugarspice' ), '<span>' . get_the_date( 'F Y' ) . '</span>' );
+							printf( __( 'Month: %s', 'sugarspice' ), '<span>' . esc_html( get_the_date( 'F Y' ) ) . '</span>' );
 
 						elseif ( is_year() ) :
-							printf( __( 'Year: %s', 'sugarspice' ), '<span>' . get_the_date( 'Y' ) . '</span>' );
+							printf( __( 'Year: %s', 'sugarspice' ), '<span>' . esc_html( get_the_date( 'Y' ) ) . '</span>' );
 
 						elseif ( is_tax( 'post_format', 'post-format-aside' ) ) :
 							_e( 'Asides', 'sugarspice' );
@@ -68,7 +69,7 @@ get_header(); ?>
 					// Show an optional term description.
 					$term_description = term_description();
 					if ( ! empty( $term_description ) ) :
-						printf( '<div class="taxonomy-description">%s</div>', $term_description );
+						echo '<div class="taxonomy-description">' . wp_kses_post( $term_description ) . '</div>';
 					endif;
 				?>
 			</header><!-- .page-header -->
@@ -77,9 +78,9 @@ get_header(); ?>
 			<?php while ( have_posts() ) : the_post(); ?>
 
 				<?php
-                    if ( of_get_option( 'ap_layout' ) == 'excerpt' ) {
+					if ( 'excerpt' === $archive_layout ) {
                         get_template_part( 'content', 'loop' );
-                    } else if ( of_get_option( 'ap_layout' ) == 'firstfull' ) {
+					} elseif ( 'firstfull' === $archive_layout ) {
                         get_template_part( 'content', 'firstfull' );                    
                     } else {
                         get_template_part( 'content' );                    

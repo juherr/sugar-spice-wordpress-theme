@@ -30,11 +30,11 @@ function sugarspice_content_nav( $nav_id ) {
 	$nav_class = ( is_single() ) ? 'post-navigation' : 'paging-navigation';
 
 	?>
-	<nav role="navigation" id="<?php echo esc_attr( $nav_id ); ?>" class="<?php echo $nav_class; ?> section">
-		<h1 class="screen-reader-text"><?php _e( 'Post navigation', 'sugarspice' ); ?></h1>
+	<nav role="navigation" id="<?php echo esc_attr( $nav_id ); ?>" class="<?php echo esc_attr( $nav_class ); ?> section">
+		<h1 class="screen-reader-text"><?php esc_html_e( 'Post navigation', 'sugarspice' ); ?></h1>
 
 	<?php if ( is_single() ) : // navigation links for single posts ?>
-        <h2 class="section-title"><span><?php _e('Navigation','sugarspice'); ?></span></h2>
+        <h2 class="section-title"><span><?php esc_html_e( 'Navigation', 'sugarspice' ); ?></span></h2>
 		<?php previous_post_link( '<div class="nav-previous">%link</div>', '<span class="meta-nav">' . _x( '&larr;', 'Previous post link', 'sugarspice' ) . '</span> %title' ); ?>
 		<?php next_post_link( '<div class="nav-next">%link</div>', '%title <span class="meta-nav">' . _x( '&rarr;', 'Next post link', 'sugarspice' ) . '</span>' ); ?>
 
@@ -80,11 +80,11 @@ if ( ! function_exists( 'sugarspice_comment' ) ) :
 function sugarspice_comment( $comment, $args, $depth ) {
 	$GLOBALS['comment'] = $comment;
 
-	if ( 'pingback' == $comment->comment_type || 'trackback' == $comment->comment_type ) : ?>
+	if ( 'pingback' === $comment->comment_type || 'trackback' === $comment->comment_type ) : ?>
 
 	<li id="comment-<?php comment_ID(); ?>" <?php comment_class(); ?>>
 		<div class="comment-body">
-			<?php _e( 'Pingback:', 'sugarspice' ); ?> <?php comment_author_link(); ?> <?php edit_comment_link( __( 'Edit', 'sugarspice' ), '<span class="edit-link">', '</span>' ); ?>
+			<?php esc_html_e( 'Pingback:', 'sugarspice' ); ?> <?php comment_author_link(); ?> <?php edit_comment_link( __( 'Edit', 'sugarspice' ), '<span class="edit-link">', '</span>' ); ?>
 		</div>
 
 	<?php else : ?>
@@ -92,7 +92,7 @@ function sugarspice_comment( $comment, $args, $depth ) {
 	<li id="comment-<?php comment_ID(); ?>" <?php comment_class( empty( $args['has_children'] ) ? '' : 'parent' ); ?>>
 		<article id="div-comment-<?php comment_ID(); ?>" class="comment-body">
 				<div class="comment-author vcard">
-					<?php if ( 0 != $args['avatar_size'] ) echo get_avatar( $comment, $args['avatar_size'] ); ?>
+					<?php if ( 0 !== (int) $args['avatar_size'] ) { echo get_avatar( $comment, $args['avatar_size'] ); } ?>
 				</div><!-- .comment-author -->
                 <div class="comment-box">
 					<?php printf( __( '%s <span class="says">says:</span>', 'sugarspice' ), sprintf( '<cite class="fn">%s</cite>', get_comment_author_link() ) ); ?>
@@ -105,9 +105,9 @@ function sugarspice_comment( $comment, $args, $depth ) {
                         </a>
                         <?php edit_comment_link( __( 'Edit', 'sugarspice' ), '<span class="edit-link">', '</span>' ); ?>
                         </small>
-                    <?php if ( '0' == $comment->comment_approved ) : ?>
-                    <p class="comment-awaiting-moderation"><?php _e( 'Your comment is awaiting moderation.', 'sugarspice' ); ?></p>
-                    <?php endif; ?>
+					<?php if ( '0' === $comment->comment_approved ) : ?>
+					<p class="comment-awaiting-moderation"><?php _e( 'Your comment is awaiting moderation.', 'sugarspice' ); ?></p>
+					<?php endif; ?>
                     </span><!-- .comment-meta -->
 
                     <div class="comment-content">
@@ -141,8 +141,13 @@ if ( ! function_exists( 'sugarspice_the_attached_image' ) ) :
  */
 function sugarspice_the_attached_image() {
 	$post                = get_post();
+	$next_id             = 0;
 	$attachment_size     = apply_filters( 'sugarspice_attachment_size', array( 1200, 1200 ) );
 	$next_attachment_url = wp_get_attachment_url();
+
+	if ( ! $post ) {
+		return;
+	}
 
 	/**
 	 * Grab the IDs of all the image attachments in a gallery so we can get the
@@ -164,19 +169,20 @@ function sugarspice_the_attached_image() {
 	// If there is more than 1 attachment in a gallery...
 	if ( count( $attachment_ids ) > 1 ) {
 		foreach ( $attachment_ids as $attachment_id ) {
-			if ( $attachment_id == $post->ID ) {
+			if ( $attachment_id === $post->ID ) {
 				$next_id = current( $attachment_ids );
 				break;
 			}
 		}
 
 		// get the URL of the next image attachment...
-		if ( $next_id )
+		if ( $next_id ) {
 			$next_attachment_url = get_attachment_link( $next_id );
 
 		// or get the URL of the first image attachment.
-		else
+		} else {
 			$next_attachment_url = get_attachment_link( array_shift( $attachment_ids ) );
+		}
 	}
 
 	printf( '<a href="%1$s" rel="attachment">%2$s</a>',
@@ -191,21 +197,34 @@ endif;
 /*-------------------------------------------------------------------------------------------*/
 
 function sugarspice_caption_shortcode_filter($val, $attr, $content = null) {
+	$attributes = shortcode_atts(
+		array(
+			'id'      => '',
+			'align'   => 'alignnone',
+			'width'   => '',
+			'caption' => '',
+		),
+		$attr,
+		'caption'
+	);
 
-    extract(shortcode_atts(array(
-        'id'    => '',
-        'align' => 'alignnone',
-        'width' => '',
-        'caption' => ''
-    ), $attr));
+	$id = (string) $attributes['id'];
+	$align = (string) $attributes['align'];
+	$width = (string) $attributes['width'];
+	$caption = (string) $attributes['caption'];
      
-    if ( 1 > (int) $width || empty($caption) )
-        return $val;
+	if ( 1 > (int) $width || empty( $caption ) ) {
+		return $val;
+	}
  
-    if ( $id ) $id = 'id="' . esc_attr($id) . '" ';
- 
-    return '<div ' . $id . 'class="wp-caption ' . esc_attr($align) . '" style="width: ' . (int) $width . 'px">'
-    . do_shortcode( $content ) . '<p class="wp-caption-text">' . $caption . '</p></div>';
+	$id_attribute = '';
+
+	if ( $id ) {
+		$id_attribute = 'id="' . esc_attr( $id ) . '" ';
+	}
+  
+	return '<div ' . $id_attribute . 'class="wp-caption ' . esc_attr( $align ) . '" style="width: ' . (int) $width . 'px">'
+		. do_shortcode( $content ) . '<p class="wp-caption-text">' . wp_kses_post( $caption ) . '</p></div>';
 }
 
 add_filter('img_caption_shortcode', 'sugarspice_caption_shortcode_filter',10,3);
@@ -248,12 +267,12 @@ function sugarspice_posted_on() {
 
     $author_string = '<span class="byline"> %1$s <span class="author vcard"><a href="%2$s" title="%3$s" rel="author" class="fn">%4$s</a></span></span>';
     
-    $author_string = sprintf( $author_string,
+	$author_string = sprintf( $author_string,
         /* translators: this text appears next to author name */
-        __( 'by', 'sugarspice' ),
+		esc_html__( 'by', 'sugarspice' ),
 		esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ),
 		esc_attr( sprintf( __( 'View all posts by %s', 'sugarspice' ), get_the_author() ) ),
-		get_the_author()
+		esc_html( get_the_author() )
     );
 
     $meta_data = array();
@@ -285,7 +304,7 @@ function sugarspice_posted_on() {
         $meta_data[] = $comments_string;
     
     
-    print( implode( ' // ', $meta_data) );
+	echo implode( ' // ', $meta_data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
     
 }
 endif;
@@ -330,40 +349,51 @@ endif;
  */
 if ( ! function_exists( 'sugarspice_post_gallery' ) ) :
   function sugarspice_post_gallery( $output, $attr) {
-    global $post, $wp_locale;
+	global $post;
 
     static $instance = 0;
     $instance++;
 
     if ( isset( $attr['orderby'] ) ) {
         $attr['orderby'] = sanitize_sql_orderby( $attr['orderby'] );
-        if ( !$attr['orderby'] )
+        if ( ! $attr['orderby'] )
             unset( $attr['orderby'] );
     }
     // Exception for Jetpack galleries
     if ( isset( $attr['type'] ) ) {
-      return;
+		return $output;
     }
-    
-    extract(shortcode_atts(array(
-        'order'      => 'ASC',
-        'orderby'    => 'menu_order ID',
-        'id'         => $post->ID,
-        'itemtag'    => 'li',
-        'icontag'    => 'div',
-        'captiontag' => 'div',
-        'columns'    => 3,
-        'size'       => array(620,350),
-        'include'    => '',
-        'exclude'    => '',
-        'link'       => '',
-    ), $attr));
 
-    $id = intval($id);
-    if ( 'RAND' == $order )
+	$defaults = array(
+		'order'      => 'ASC',
+		'orderby'    => 'menu_order ID',
+		'id'         => $post ? $post->ID : 0,
+		'itemtag'    => 'li',
+		'icontag'    => 'div',
+		'captiontag' => 'div',
+		'columns'    => 3,
+		'size'       => array( 620, 350 ),
+		'include'    => '',
+		'exclude'    => '',
+		'link'       => '',
+	);
+
+	$attributes = shortcode_atts( $defaults, $attr, 'gallery' );
+	$order = (string) $attributes['order'];
+	$orderby = (string) $attributes['orderby'];
+	$id = (int) $attributes['id'];
+	$itemtag = (string) $attributes['itemtag'];
+	$captiontag = (string) $attributes['captiontag'];
+	$size = $attributes['size'];
+	$include = (string) $attributes['include'];
+	$exclude = (string) $attributes['exclude'];
+	$link = (string) $attributes['link'];
+
+    if ( 'RAND' === $order ) {
         $orderby = 'none';
+	}
 
-    if ( !empty($include) ) {
+    if ( ! empty( $include ) ) {
         $include = preg_replace( '/[^0-9,]+/', '', $include );
         $_attachments = get_posts( array('include' => $include, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby) );
 
@@ -371,62 +401,60 @@ if ( ! function_exists( 'sugarspice_post_gallery' ) ) :
         foreach ( $_attachments as $key => $val ) {
             $attachments[$val->ID] = $_attachments[$key];
         }
-    } elseif ( !empty($exclude) ) {
+    } elseif ( ! empty( $exclude ) ) {
         $exclude = preg_replace( '/[^0-9,]+/', '', $exclude );
         $attachments = get_children( array('post_parent' => $id, 'exclude' => $exclude, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby) );
     } else {
         $attachments = get_children( array('post_parent' => $id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby) );
     }
 
-    if ( empty($attachments) )
+    if ( empty( $attachments ) )
         return '';
 
     if ( is_feed() ) {
         $output = "\n";
-        foreach ( $attachments as $att_id => $attachment )
-            $output .= wp_get_attachment_link($att_id, $size, true) . "\n";
+		foreach ( $attachments as $att_id => $attachment ) {
+            $output .= wp_get_attachment_link( $att_id, $size, true ) . "\n";
+		}
         return $output;
     }
 
-  	$itemtag = tag_escape($itemtag);
-  	$selector = "slider-{$instance}";
-  	$captiontag = tag_escape($captiontag);
+	  	$itemtag = tag_escape( $itemtag );
+	  	$selector = 'slider-' . $instance;
+	  	$captiontag = tag_escape( $captiontag );
 
 
-  	$output .= "<div id='{$selector}' class='flexslider slider-{$id}'>";
+	  	$output .= '<div id="' . esc_attr( $selector ) . '" class="flexslider slider-' . (int) $id . '">';
 
-  	$i = 0;
-    $output .= "<ul class='slides'>";
-    foreach ( $attachments as $id => $attachment ) {
-    	$itemclass = ($i==0) ? 'item active' : 'item';
+	  	$i = 0;
+    $output .= '<ul class="slides">';
+    foreach ( $attachments as $attachment_id => $attachment ) {
+	    	$itemclass = ( 0 === $i ) ? 'item active' : 'item';
 
-        if ( $link == 'none' ) {
-            $image = wp_get_attachment_image( $id, $size );        
-        } elseif ( $link == 'media' ) {
+        if ( 'none' === $link ) {
+	            $image = wp_get_attachment_image( $attachment_id, $size );        
+        } elseif ( 'media' === $link ) {
             $image = sprintf(
                 '<a href="%1$s" rel="attachment">%2$s</a>',
-                esc_url( wp_get_attachment_url( $id ) ),
-                wp_get_attachment_image( $id, $size )
+	                esc_url( wp_get_attachment_url( $attachment_id ) ),
+	                wp_get_attachment_image( $attachment_id, $size )
             );
         } else {
-            $image = wp_get_attachment_link( $id, $size, true, false );            
+	            $image = wp_get_attachment_link( $attachment_id, $size, true, false );            
         }
 
-    	$output .= "<{$itemtag} class='{$itemclass}'>";
-    	$output .= "$image";
+	    	$output .= '<' . $itemtag . ' class="' . esc_attr( $itemclass ) . '">';
+	    	$output .= "$image";
 
-    	if ( $captiontag && trim($attachment->post_excerpt) ) {
-        $output .= "
-          <{$captiontag} class='flex-caption'>
-          " . wptexturize($attachment->post_excerpt) . "
-          </{$captiontag}>";
-      }
-    	$output .= "</{$itemtag}>";
-    	$i++;
+	    	if ( $captiontag && trim( $attachment->post_excerpt ) ) {
+	        $output .= '<' . $captiontag . ' class="flex-caption">' . wp_kses_post( wptexturize( $attachment->post_excerpt ) ) . '</' . $captiontag . '>';
+       }
+	    	$output .= '</' . $itemtag . '>';
+	    	$i++;
     }
-    $output .= "</ul>";
+    $output .= '</ul>';
     
-    $output .= "</div>";
+    $output .= '</div>';
     return $output;
   }
 endif;

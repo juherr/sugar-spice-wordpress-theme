@@ -9,9 +9,14 @@ function optionsframework_option_name() {
 
 	// This gets the theme name from the stylesheet
 	$themename = get_option( 'stylesheet' );
-	$themename = preg_replace("/\W/", "_", strtolower($themename) );
+	$themename = preg_replace( '/\W/', '_', strtolower( $themename ) );
 
 	$optionsframework_settings = get_option( 'optionsframework' );
+
+	if ( ! is_array( $optionsframework_settings ) ) {
+		$optionsframework_settings = array();
+	}
+
 	$optionsframework_settings['id'] = $themename;
 	update_option( 'optionsframework', $optionsframework_settings );
 }
@@ -41,7 +46,7 @@ function optionsframework_options() {
 		'yellow'    => __('Yellow', 'sugarspice'),
 	);
 	
-	$radio = array("0" => __('No', 'sugarspice'),"1" => __('Yes', 'sugarspice'));
+	$radio = array( '0' => __( 'No', 'sugarspice' ), '1' => __( 'Yes', 'sugarspice' ) );
 
 	// Layout Array
 	$layout_options = array(
@@ -51,9 +56,9 @@ function optionsframework_options() {
 	);
 	// Multicheck Array
 	$meta_data = array(
-		'date'      => __('Display date', 'options_framework_theme'),
-		'author'    => __('Display author', 'options_framework_theme'),
-		'comments'  => __('Display comments', 'options_framework_theme'),
+		'date'      => __( 'Display date', 'sugarspice' ),
+		'author'    => __( 'Display author', 'sugarspice' ),
+		'comments'  => __( 'Display comments', 'sugarspice' ),
 	);
 
 	// Multicheck Defaults

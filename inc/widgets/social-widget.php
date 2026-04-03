@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Social Widget
+ * Social widget.
  */
 
 class sugarspice_social_widget extends WP_Widget {
@@ -33,128 +33,128 @@ class sugarspice_social_widget extends WP_Widget {
 	/**
 	 * How to display the widget on the screen.
 	 */
-	function widget( $args, $instance ) {
-		extract( $args );
+	public function widget( $args, $instance ) {
+		$title         = apply_filters( 'widget_title', isset( $instance['title'] ) ? $instance['title'] : '' );
+		$before_widget = isset( $args['before_widget'] ) ? $args['before_widget'] : '';
+		$after_widget  = isset( $args['after_widget'] ) ? $args['after_widget'] : '';
+		$before_title  = isset( $args['before_title'] ) ? $args['before_title'] : '';
+		$after_title   = isset( $args['after_title'] ) ? $args['after_title'] : '';
 
-		/* Our variables from the widget settings. */
-		$title = apply_filters('widget_title', $instance['title'] );
-		$rss = $instance['rss'];
-		$facebook = $instance['facebook'];
-		$twitter = $instance['twitter'];
-		$googleplus = $instance['googleplus'];
-		$pinterest = $instance['pinterest'];
-		$instagram = $instance['instagram'];
-		$youtube = $instance['youtube'];
-		$flickr = $instance['flickr'];
-		
-		/* Before widget (defined by themes). */
+		$profiles = array(
+			'facebook'   => array( 'label' => __( 'Follow me on Facebook', 'sugarspice' ), 'icon' => 'icon-facebook' ),
+			'twitter'    => array( 'label' => __( 'Follow me on Twitter', 'sugarspice' ), 'icon' => 'icon-twitter' ),
+			'googleplus' => array( 'label' => __( 'Follow me on Google+', 'sugarspice' ), 'icon' => 'icon-google-plus' ),
+			'pinterest'  => array( 'label' => __( 'Follow me on Pinterest', 'sugarspice' ), 'icon' => 'icon-pinterest' ),
+			'instagram'  => array( 'label' => __( 'Follow me on Instagram', 'sugarspice' ), 'icon' => 'icon-instagram' ),
+			'youtube'    => array( 'label' => __( 'Subscribe to my YouTube channel', 'sugarspice' ), 'icon' => 'icon-youtube' ),
+			'flickr'     => array( 'label' => __( 'Follow me on Flickr', 'sugarspice' ), 'icon' => 'icon-flickr' ),
+			'rss'        => array( 'label' => __( 'Subscribe to my RSS feed', 'sugarspice' ), 'icon' => 'icon-rss' ),
+		);
+
 		echo $before_widget;
 
-		/* Display the widget title if one was input (before and after defined by themes). */
-		if ( $title )
-			echo $before_title . $title . $after_title;
-
+		if ( $title ) {
+			echo $before_title . esc_html( $title ) . $after_title;
+		}
 		?>
-        <ul class="social">
-            <?php if($facebook) { ?><li><a href="<?php echo esc_url($facebook); ?>" target="_blank" class="social-icon" title="<?php esc_attr_e('Follow me on Facebook','sugarspice') ?>"><div class="icon icon-facebook"></div></a></li><?php } ?>
-            <?php if($twitter) { ?><li><a href="<?php echo esc_url($twitter); ?>" target="_blank" class="social-icon" title="<?php esc_attr_e('Follow me on Twitter','sugarspice') ?>"><div class="icon icon-twitter"></div></a></li><?php } ?>
-            <?php if($googleplus) { ?><li><a href="<?php echo esc_url($googleplus); ?>" target="_blank" class="social-icon" title="<?php esc_attr_e('Follow me on Google+','sugarspice') ?>"><div class="icon icon-google-plus"></div></a></li><?php } ?>
-            <?php if($pinterest) { ?><li><a href="<?php echo esc_url($pinterest); ?>" target="_blank" class="social-icon" title="<?php esc_attr_e('Follow me on Pinterest','sugarspice') ?>"><div class="icon icon-pinterest"></div></a></li><?php } ?>
-            <?php if($instagram) { ?><li><a href="<?php echo esc_url($instagram); ?>" target="_blank" class="social-icon" title="<?php esc_attr_e('Follow me on Instagram','sugarspice') ?>"><div class="icon icon-instagram"></div></a></li><?php } ?>
-            <?php if($youtube) { ?><li><a href="<?php echo esc_url($youtube); ?>" target="_blank" class="social-icon" title="<?php esc_attr_e('Subscribe to my YouTube channel','sugarspice') ?>"><div class="icon icon-youtube"></div></a></li><?php } ?>
-            <?php if($flickr) { ?><li><a href="<?php echo esc_url($flickr); ?>" target="_blank" class="social-icon" title="<?php esc_attr_e('Follow me on Flickr','sugarspice') ?>"><div class="icon icon-flickr"></div></a></li><?php } ?>
-            <?php if($rss) { ?><li><a href="<?php echo esc_url($rss); ?>" target="_blank" class="social-icon" title="<?php esc_attr_e('Subscribe to my RSS feed','sugarspice') ?>"><div class="icon icon-rss"></div></a></li><?php } ?>
-        </ul>
+		<ul class="social">
+			<?php foreach ( $profiles as $key => $profile ) : ?>
+				<?php $url = isset( $instance[ $key ] ) ? $instance[ $key ] : ''; ?>
+				<?php if ( $url ) : ?>
+				<li>
+					<a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener noreferrer" class="social-icon" title="<?php echo esc_attr( $profile['label'] ); ?>">
+						<div class="icon <?php echo esc_attr( $profile['icon'] ); ?>" aria-hidden="true"></div>
+					</a>
+				</li>
+				<?php endif; ?>
+			<?php endforeach; ?>
+		</ul>
 		<?php
 
-		/* After widget (defined by themes). */
 		echo $after_widget;
 	}
 
 	/**
 	 * Update the widget settings.
 	 */
-	function update( $new_instance, $old_instance ) {
+	public function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
 
-		/* Strip tags for title and name to remove HTML (important for text inputs). */
-		$instance['title'] = strip_tags( $new_instance['title'] );
-		$instance['rss'] = $new_instance['rss'];
-		$instance['facebook'] = $new_instance['facebook'];
-		$instance['googleplus'] = $new_instance['googleplus'];
-		$instance['twitter'] = $new_instance['twitter'];
-		$instance['pinterest'] = $new_instance['pinterest'];
-		$instance['instagram'] = $new_instance['instagram'];
-		$instance['youtube'] = $new_instance['youtube'];
-		$instance['flickr'] = $new_instance['flickr'];
+		$instance['title'] = sanitize_text_field( $new_instance['title'] );
+		$instance['rss'] = esc_url_raw( $new_instance['rss'] );
+		$instance['facebook'] = esc_url_raw( $new_instance['facebook'] );
+		$instance['googleplus'] = esc_url_raw( $new_instance['googleplus'] );
+		$instance['twitter'] = esc_url_raw( $new_instance['twitter'] );
+		$instance['pinterest'] = esc_url_raw( $new_instance['pinterest'] );
+		$instance['instagram'] = esc_url_raw( $new_instance['instagram'] );
+		$instance['youtube'] = esc_url_raw( $new_instance['youtube'] );
+		$instance['flickr'] = esc_url_raw( $new_instance['flickr'] );
 
 		return $instance;
 	}
 
 
-	function form( $instance ) {
+	public function form( $instance ) {
 
 		/* Set up some default widget settings. */
-		$defaults = array( 'title' => 'Follow me', 'rss' => '', 'facebook' => '', 'twitter' => '', 'googleplus' => '', 'pinterest' => '', 'instagram' => '', 'youtube' => '', 'flickr' => '');
+		$defaults = array( 'title' => __( 'Follow me', 'sugarspice' ), 'rss' => '', 'facebook' => '', 'twitter' => '', 'googleplus' => '', 'pinterest' => '', 'instagram' => '', 'youtube' => '', 'flickr' => '' );
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 
 		<!-- Widget Title: Text Input -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e('Title','sugarspice') ?>:</label>
-			<input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" style="width:90%;" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', 'sugarspice' ); ?>:</label>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" value="<?php echo esc_attr( $instance['title'] ); ?>" style="width:90%;" />
 		</p>
         
-        <p><?php _e('Enter full URL. If you don\'t want to display element, leave it\'s URL field empty.','sugarspice') ?></p>
+		<p><?php esc_html_e( 'Enter full URL. Leave a field empty to hide that icon.', 'sugarspice' ); ?></p>
 		
 		<!-- Facebook URL -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'facebook' ); ?>"><?php _e('URL address of your Facebook profile or page','sugarspice') ?>:</label>
-			<input id="<?php echo $this->get_field_id( 'facebook' ); ?>" name="<?php echo $this->get_field_name( 'facebook' ); ?>" value="<?php echo $instance['facebook']; ?>" style="width:90%;" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'facebook' ) ); ?>"><?php esc_html_e( 'URL address of your Facebook profile or page', 'sugarspice' ); ?>:</label>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'facebook' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'facebook' ) ); ?>" value="<?php echo esc_attr( $instance['facebook'] ); ?>" style="width:90%;" />
 		</p>
         
 		<!-- Twitter URL -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'twitter' ); ?>"><?php _e('URL address of your Twitter profile','sugarspice') ?>:</label>
-			<input id="<?php echo $this->get_field_id( 'twitter' ); ?>" name="<?php echo $this->get_field_name( 'twitter' ); ?>" value="<?php echo $instance['twitter']; ?>" style="width:90%;" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'twitter' ) ); ?>"><?php esc_html_e( 'URL address of your Twitter profile', 'sugarspice' ); ?>:</label>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'twitter' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'twitter' ) ); ?>" value="<?php echo esc_attr( $instance['twitter'] ); ?>" style="width:90%;" />
 		</p>
         
 		<!-- Google Plus URL -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'googleplus' ); ?>"><?php _e('URL address of your Google+ profile','sugarspice') ?>:</label>
-			<input id="<?php echo $this->get_field_id( 'googleplus' ); ?>" name="<?php echo $this->get_field_name( 'googleplus' ); ?>" value="<?php echo $instance['googleplus']; ?>" style="width:90%;" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'googleplus' ) ); ?>"><?php esc_html_e( 'URL address of your Google+ profile', 'sugarspice' ); ?>:</label>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'googleplus' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'googleplus' ) ); ?>" value="<?php echo esc_attr( $instance['googleplus'] ); ?>" style="width:90%;" />
 		</p>    
         
 		<!-- Pinterest URL -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'pinterest' ); ?>"><?php _e('URL address of your Pinterest profile','sugarspice') ?>:</label>
-			<input id="<?php echo $this->get_field_id( 'pinterest' ); ?>" name="<?php echo $this->get_field_name( 'pinterest' ); ?>" value="<?php echo $instance['pinterest']; ?>" style="width:90%;" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'pinterest' ) ); ?>"><?php esc_html_e( 'URL address of your Pinterest profile', 'sugarspice' ); ?>:</label>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'pinterest' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'pinterest' ) ); ?>" value="<?php echo esc_attr( $instance['pinterest'] ); ?>" style="width:90%;" />
 		</p>
 
 		<!-- Instagram URL -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'instagram' ); ?>"><?php _e('URL address of your Instagram profile','sugarspice') ?>:</label>
-			<input id="<?php echo $this->get_field_id( 'instagram' ); ?>" name="<?php echo $this->get_field_name( 'instagram' ); ?>" value="<?php echo $instance['instagram']; ?>" style="width:90%;" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'instagram' ) ); ?>"><?php esc_html_e( 'URL address of your Instagram profile', 'sugarspice' ); ?>:</label>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'instagram' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'instagram' ) ); ?>" value="<?php echo esc_attr( $instance['instagram'] ); ?>" style="width:90%;" />
 		</p>
         
 		<!-- YouTube URL -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'youtube' ); ?>"><?php _e('URL address of your YouTube channel','sugarspice') ?>:</label>
-			<input id="<?php echo $this->get_field_id( 'youtube' ); ?>" name="<?php echo $this->get_field_name( 'youtube' ); ?>" value="<?php echo $instance['youtube']; ?>" style="width:90%;" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'youtube' ) ); ?>"><?php esc_html_e( 'URL address of your YouTube channel', 'sugarspice' ); ?>:</label>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'youtube' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'youtube' ) ); ?>" value="<?php echo esc_attr( $instance['youtube'] ); ?>" style="width:90%;" />
 		</p>
         
 		<!-- Flickr URL -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'flickr' ); ?>"><?php _e('URL address of your Flickr profile page','sugarspice') ?>:</label>
-			<input id="<?php echo $this->get_field_id( 'flickr' ); ?>" name="<?php echo $this->get_field_name( 'flickr' ); ?>" value="<?php echo $instance['flickr']; ?>" style="width:90%;" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'flickr' ) ); ?>"><?php esc_html_e( 'URL address of your Flickr profile page', 'sugarspice' ); ?>:</label>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'flickr' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'flickr' ) ); ?>" value="<?php echo esc_attr( $instance['flickr'] ); ?>" style="width:90%;" />
 		</p>
         
 		<!-- RSS URL -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'rss' ); ?>"><?php _e('URL address of your RSS feed','sugarspice') ?>:</label>
-			<input id="<?php echo $this->get_field_id( 'rss' ); ?>" name="<?php echo $this->get_field_name( 'rss' ); ?>" value="<?php echo $instance['rss']; ?>" style="width:90%;" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'rss' ) ); ?>"><?php esc_html_e( 'URL address of your RSS feed', 'sugarspice' ); ?>:</label>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'rss' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'rss' ) ); ?>" value="<?php echo esc_attr( $instance['rss'] ); ?>" style="width:90%;" />
 		</p>
 	<?php
 	}
 }
-
-?>

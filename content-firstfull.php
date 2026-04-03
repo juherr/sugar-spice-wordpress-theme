@@ -5,9 +5,10 @@
 ?>
 
 <?php
+	global $wp_query;
 
 // Display first post on Home Page in full, rest as excerpts
-if( !is_paged() && ($posts[0] == $post) ) :
+if ( ! is_paged() && isset( $wp_query->current_post ) && 0 === (int) $wp_query->current_post ) :
 
 ?>
     <article id="post-<?php the_ID(); ?>" <?php post_class('firstfull'); ?>>

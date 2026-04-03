@@ -15,8 +15,10 @@
  * the visitor has not yet entered the password we will
  * return early without loading the comments.
  */
-if ( post_password_required() )
+
+if ( post_password_required() ) {
 	return;
+}
 ?>
 
 	<div id="comments" class="comments-area section">
@@ -27,8 +29,10 @@ if ( post_password_required() )
 		<h2 class="comments-title section-title">
         <span>
 			<?php
-				printf( _nx( 'One comment', '%1$s comments', get_comments_number(), 'sugarspice' ),
-					number_format_i18n( get_comments_number() ), '<span>' . '</span>' );
+				printf(
+					_nx( 'One comment', '%1$s comments', get_comments_number(), 'comments title', 'sugarspice' ),
+					esc_html( number_format_i18n( get_comments_number() ) )
+				);
 			?>
 		</span>
         </h2>
@@ -49,7 +53,7 @@ if ( post_password_required() )
 				 * define sugarspice_comment() and that will be used instead.
 				 * See sugarspice_comment() in inc/template-tags.php for more.
 				 */
-				wp_list_comments( array( 'callback' => 'sugarspice_comment', 'avatar_size' => '60' ) );
+				wp_list_comments( array( 'callback' => 'sugarspice_comment', 'avatar_size' => 60 ) );
 			?>
 		</ol><!-- .comment-list -->
 
@@ -65,17 +69,18 @@ if ( post_password_required() )
 
 	<?php
 		// If comments are closed and there are comments, let's leave a little note, shall we?
-		if ( ! comments_open() && '0' != get_comments_number() && post_type_supports( get_post_type(), 'comments' ) ) :
+		if ( ! comments_open() && 0 !== get_comments_number() && post_type_supports( get_post_type(), 'comments' ) ) :
 	?>
 		<p class="no-comments"><?php _e( 'Comments are closed.', 'sugarspice' ); ?></p>
 	<?php endif; ?>
 
-	<?php     
-    comment_form(array(
-        'comment_notes_before' => '',    
-        'comment_notes_after' => ''
-        )
-    );  
-    ?>
+	<?php
+	comment_form(
+		array(
+			'comment_notes_before' => '',
+			'comment_notes_after'  => '',
+		)
+	);
+	?>
 
 </div><!-- #comments -->

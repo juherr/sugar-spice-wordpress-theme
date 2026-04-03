@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Contact Widget
+ * Contact widget.
  */
 
 class sugarspice_contact_widget extends WP_Widget {
@@ -33,86 +33,87 @@ class sugarspice_contact_widget extends WP_Widget {
 	/**
 	 * How to display the widget on the screen.
 	 */
-	function widget( $args, $instance ) {
-    
-		extract( $args );
+	public function widget( $args, $instance ) {
+		$title        = isset( $instance['title'] ) ? $instance['title'] : '';
+		$address      = isset( $instance['address'] ) ? $instance['address'] : '';
+		$phone        = isset( $instance['phone'] ) ? $instance['phone'] : '';
+		$email        = isset( $instance['email'] ) ? $instance['email'] : '';
+		$before_widget = isset( $args['before_widget'] ) ? $args['before_widget'] : '';
+		$after_widget  = isset( $args['after_widget'] ) ? $args['after_widget'] : '';
+		$before_title  = isset( $args['before_title'] ) ? $args['before_title'] : '';
+		$after_title   = isset( $args['after_title'] ) ? $args['after_title'] : '';
 
-		/* Our variables from the widget settings. */
-        $title = $instance['title'];
-		$address = $instance['address'];
-		$phone = $instance['phone'];
-		$email = $instance['email'];
-
-		/* Before widget (defined by themes). */
 		echo $before_widget;
-        
-        // Display the widget title
-        if ( $title )  
-            echo $before_title . $title . $after_title;  
-    		?>
-            <ul>
-                <li>
-                    <i class="icon-home"></i>
-                    <b><?php _e( 'Address', 'sugarspice' ); ?>:</b> <?php echo esc_attr ( $address ); ?>
-                </li>
-                <li>
-                    <i class="icon-phone"></i>
-                    <b><?php _e( 'Phone', 'sugarspice' ); ?>:</b> <?php echo esc_attr( $phone ); ?>
-                </li>
-                <li>
-                    <i class="icon-envelope-alt"></i>
-                    <b><?php _e( 'Email', 'sugarspice' ); ?>:</b> <a href="mailto:<?php echo $email; ?>"><?php echo esc_attr( $email ); ?></a>
-                </li>
-            </ul>
-        
+
+		if ( $title ) {
+			echo $before_title . esc_html( $title ) . $after_title;
+		}
+		?>
+		<ul>
+			<?php if ( $address ) : ?>
+			<li>
+				<i class="icon-home" aria-hidden="true"></i>
+				<b><?php esc_html_e( 'Address', 'sugarspice' ); ?>:</b> <?php echo esc_html( $address ); ?>
+			</li>
+			<?php endif; ?>
+			<?php if ( $phone ) : ?>
+			<li>
+				<i class="icon-phone" aria-hidden="true"></i>
+				<b><?php esc_html_e( 'Phone', 'sugarspice' ); ?>:</b> <?php echo esc_html( $phone ); ?>
+			</li>
+			<?php endif; ?>
+			<?php if ( $email ) : ?>
+			<li>
+				<i class="icon-envelope-alt" aria-hidden="true"></i>
+				<b><?php esc_html_e( 'Email', 'sugarspice' ); ?>:</b>
+				<a href="mailto:<?php echo esc_attr( antispambot( $email ) ); ?>"><?php echo esc_html( antispambot( $email ) ); ?></a>
+			</li>
+			<?php endif; ?>
+		</ul>
 		<?php
-		/* After widget (defined by themes). */
 		echo $after_widget;
-    }
+	}
 
 	/**
 	 * Update the widget settings.
 	 */
-	function update( $new_instance, $old_instance ) {
+	public function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
+		$instance['title'] = sanitize_text_field( $new_instance['title'] );
+		$instance['address'] = sanitize_text_field( $new_instance['address'] );
+		$instance['phone'] = sanitize_text_field( $new_instance['phone'] );
+		$instance['email'] = sanitize_email( $new_instance['email'] );
 
-		/* Strip tags for title and name to remove HTML (important for text inputs). */
-		$instance['title'] = strip_tags( $new_instance['title'] );
-		$instance['address'] = strip_tags( $new_instance['address'] );
-		$instance['phone'] = strip_tags( $new_instance['phone'] );
-		$instance['email'] = strip_tags( $new_instance['email'] );
 		return $instance;
 	}
 
 
-	function form( $instance ) {
+	public function form( $instance ) {
 
 		/* Set up some default widget settings. */
-		$defaults = array('title' => __('Contact','sugarspice'), 'address' => '', 'phone' => '', 'email' => '' );
+		$defaults = array( 'title' => __( 'Contact', 'sugarspice' ), 'address' => '', 'phone' => '', 'email' => '' );
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 		
 		<!-- Widget Title -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e('Title','sugarspice') ?>:</label>
-			<input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" style="width:90%;" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', 'sugarspice' ); ?>:</label>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" value="<?php echo esc_attr( $instance['title'] ); ?>" style="width:90%;" />
 		</p>
 		<!-- Addres -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'address' ); ?>"><?php _e('Address','sugarspice') ?>:</label>
-			<input id="<?php echo $this->get_field_id( 'address' ); ?>" name="<?php echo $this->get_field_name( 'address' ); ?>" value="<?php echo $instance['address']; ?>" style="width:90%;" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'address' ) ); ?>"><?php esc_html_e( 'Address', 'sugarspice' ); ?>:</label>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'address' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'address' ) ); ?>" value="<?php echo esc_attr( $instance['address'] ); ?>" style="width:90%;" />
 		</p>
 		<!-- Phone -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'phone' ); ?>"><?php _e('Phone','sugarspice') ?>:</label>
-			<input id="<?php echo $this->get_field_id( 'phone' ); ?>" name="<?php echo $this->get_field_name( 'phone' ); ?>" value="<?php echo $instance['phone']; ?>" style="width:90%;" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'phone' ) ); ?>"><?php esc_html_e( 'Phone', 'sugarspice' ); ?>:</label>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'phone' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'phone' ) ); ?>" value="<?php echo esc_attr( $instance['phone'] ); ?>" style="width:90%;" />
 		</p>
 		<!-- Email -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'email' ); ?>"><?php _e('Email','sugarspice') ?>:</label>
-			<input id="<?php echo $this->get_field_id( 'email' ); ?>" name="<?php echo $this->get_field_name( 'email' ); ?>" value="<?php echo $instance['email']; ?>" style="width:90%;" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'email' ) ); ?>"><?php esc_html_e( 'Email', 'sugarspice' ); ?>:</label>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'email' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'email' ) ); ?>" value="<?php echo esc_attr( $instance['email'] ); ?>" style="width:90%;" />
 		</p>        
 	<?php
 	}
 }
-
-?>

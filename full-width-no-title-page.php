@@ -28,13 +28,13 @@ get_header(); ?>
 							) );
 						?>
 					</div><!-- .entry-content -->
-					<?php edit_post_link( __( 'Edit', 'sugarspice' ), '<footer class="entry-meta"><span class="edit-link">', '</span></footer>' ); ?>
+					<?php edit_post_link( esc_html__( 'Edit', 'sugarspice' ), '<footer class="entry-meta"><span class="edit-link">', '</span></footer>' ); ?>
 				</article><!-- #post-## -->
 
 
 				<?php
 					// If comments are open or we have at least one comment, load up the comment template
-					if ( comments_open() || '0' != get_comments_number() )
+					if ( comments_open() || 0 !== get_comments_number() )
 						comments_template();
 				?>
 
